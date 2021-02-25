@@ -103,6 +103,10 @@ void Board::init(Size xS, Size yS)
         }
     }
 
+    std::fill(chain_head, chain_head+MAX_ARR_SIZE, C_EMPTY);
+    std::fill(next_in_chain, next_in_chain+MAX_ARR_SIZE, C_EMPTY);
+    std::fill(chain_data, chain_data+MAX_ARR_SIZE, ChainData());
+
     Location::getAdjacentOffsets(adj_offsets,x_size);
 }
 
@@ -138,7 +142,7 @@ void Board::playMoveAssumeLegal(Loc loc, Player pla)
             mergeChains(adj,loc);
         }
 
-            //Opp chain!
+        //Opp chain!
         else if(colors[adj] == opp)
         {
             Loc opp_head = chain_head[adj];
@@ -159,7 +163,7 @@ void Board::playMoveAssumeLegal(Loc loc, Player pla)
             //Kill it?
             if(getNumLiberties(adj) == 0)
             {
-                throw StringError("capture opp move is illegal in nogo!");
+                throw StringError("capture opp stone is illegal in nogo!");
             }
         }
     }
@@ -248,6 +252,41 @@ bool Board::isLibertyOf(Loc loc, Loc head) const
         return true;
 
     return false;
+}
+
+Size Board::get_xsize() const {
+    return x_size;
+}
+
+bool Board::playMove(Loc loc, Player pla) {
+    if(isLegal(loc,pla))
+    {
+        playMoveAssumeLegal(loc,pla);
+        return true;
+    }
+    return false;
+}
+
+Size Board::get_ysize() const {
+    return y_size;
+}
+
+void Board::reset() {
+    for(int i = 0; i < MAX_ARR_SIZE; i++)
+        colors[i] = C_WALL;
+
+    for(int y = 0; y < y_size; y++)
+    {
+        for(int x = 0; x < x_size; x++)
+        {
+            Loc loc = (x+1) + (y+1)*(x_size+1);
+            colors[loc] = C_EMPTY;
+        }
+    }
+
+    std::fill(chain_head, chain_head+MAX_ARR_SIZE, C_EMPTY);
+    std::fill(next_in_chain, next_in_chain+MAX_ARR_SIZE, C_EMPTY);
+    std::fill(chain_data, chain_data+MAX_ARR_SIZE, ChainData());
 }
 
 void Location::getAdjacentOffsets(Size adj_offsets[8], Size x_size)

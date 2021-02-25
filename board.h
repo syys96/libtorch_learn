@@ -86,7 +86,16 @@ public:
     void playMoveAssumeLegal(Loc loc, Player pla);
     //Gets the number of empty spaces directly adjacent to this location
     short getNumImmediateLiberties(Loc loc) const;
-
+    // init board
+    void init(Size xS, Size yS);
+    // return x size
+    Size get_xsize() const;
+    // return y size;
+    Size get_ysize() const;
+    //Attempts to play the specified move. Returns true if successful, returns false if the move was illegal.
+    bool playMove(Loc loc, Player pla);
+    // reset board
+    void reset();
 private:
     //Structs---------------------------------------
 
@@ -95,6 +104,7 @@ private:
         Player owner;        //Owner of chain
         short num_locs;      //Number of stones in chain
         short num_liberties; //Number of liberties in chain
+        ChainData() {owner = C_EMPTY; num_locs = 0; num_liberties = 0;}
     };
 
     //Data--------------------------------------------
@@ -110,7 +120,6 @@ private:
 
     Size adj_offsets[8]; //Indices 0-3: Offsets to add for adjacent points. Indices 4-7: Offsets for diagonal points. 2 and 3 are +x and +y.
 
-    void init(Size xS, Size yS);
     void mergeChains(Loc loc1, Loc loc2);
     bool isLibertyOf(Loc loc, Loc head) const;
 };
