@@ -72,6 +72,8 @@ public:
     Board(Size x, Size y); //Create Board of size (x,y)
     Board(const Board& other);
 
+    Board& operator=(const Board&) = default;
+
     //Check if moving here would be a self-capture
     bool isSuicide(Loc loc, Player pla) const;
     //Check if a move at this location would be a capture of an opponent group.

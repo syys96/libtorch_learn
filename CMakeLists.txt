@@ -11,7 +11,8 @@ set(CMAKE_PREFIX_PATH /Users/syys/Downloads/cpp_torch_app/libtorch)
 find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
-add_executable(example-app main.cpp board.cpp core/global.cpp)
+add_executable(example-app main.cpp board.cpp core/global.cpp
+        thread_pool.cpp tests/thread_pool_test.cpp)
 target_link_libraries(example-app "${TORCH_LIBRARIES}")
 set_property(TARGET example-app PROPERTY CXX_STANDARD 14)
 
