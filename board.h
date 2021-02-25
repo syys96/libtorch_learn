@@ -8,6 +8,10 @@
 #include <vector>
 #include "core/global.h"
 
+#ifndef COMPILE_MAX_BOARD_LEN
+#define COMPILE_MAX_BOARD_LEN 9
+#endif
+
 struct Board;
 
 typedef int8_t Color;
@@ -47,10 +51,6 @@ namespace Location
 static constexpr Player P_BLACK = 1;
 static constexpr Player P_WHITE = 2;
 
-static constexpr int MAX_LEN = 9;
-static constexpr int MAX_ARR_SIZE = (MAX_LEN+1) * (MAX_LEN+1);
-static constexpr int ACTION_MAX_SIZE = MAX_LEN * MAX_LEN;
-
 static constexpr Color C_EMPTY = 0;
 static constexpr Color C_BLACK = 1;
 static constexpr Color C_WHITE = 2;
@@ -63,6 +63,10 @@ static inline Color getOpp(Color c)
 class Board
 {
 public:
+    static constexpr int MAX_LEN = COMPILE_MAX_BOARD_LEN;
+    static constexpr int MAX_ARR_SIZE = (MAX_LEN+1) * (MAX_LEN+1);
+    static constexpr int ACTION_MAX_SIZE = MAX_LEN * MAX_LEN;
+
     //Constructors---------------------------------
     Board();  //Create Board of size (9,9)
     Board(Size x, Size y); //Create Board of size (x,y)
@@ -76,6 +80,10 @@ public:
     int getNumLiberties(Loc loc) const;
     //Check if moving here is legal.
     bool isLegal(Loc loc, Player pla) const;
+    //Plays the specified move, assuming it is legal.
+    void playMoveAssumeLegal(Loc loc, Player pla);
+    //Gets the number of empty spaces directly adjacent to this location
+    short getNumImmediateLiberties(Loc loc) const;
 
 private:
     //Structs---------------------------------------
@@ -101,6 +109,8 @@ private:
     Size adj_offsets[8]; //Indices 0-3: Offsets to add for adjacent points. Indices 4-7: Offsets for diagonal points. 2 and 3 are +x and +y.
 
     void init(Size xS, Size yS);
+    void mergeChains(Loc loc1, Loc loc2);
+    bool isLibertyOf(Loc loc, Loc head) const;
 };
 
 #endif //EXAMPLE_APP_BOARD_H
