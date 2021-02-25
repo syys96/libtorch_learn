@@ -6,22 +6,55 @@
 #define EXAMPLE_APP_BOARD_H
 
 #include <vector>
+#include "core/global.h"
+
+struct Board;
 
 typedef int8_t Color;
 typedef short Loc;
+typedef short Size;
 typedef int8_t Player;
+
+//Location of a point on the board
+//(x,y) is represented as (x+1) + (y+1)*(x_size+1)
+namespace Location
+{
+    Loc getLoc(int x, int y, int x_size);
+    int getX(Loc loc, int x_size);
+    int getY(Loc loc, int x_size);
+
+    void getAdjacentOffsets(Size adj_offsets[8], Size x_size);
+    bool isAdjacent(Loc loc0, Loc loc1, int x_size);
+    Loc getMirrorLoc(Loc loc, int x_size, int y_size);
+    Loc getCenterLoc(int x_size, int y_size);
+    bool isCentral(Loc loc, int x_size, int y_size);
+    int distance(Loc loc0, Loc loc1, int x_size);
+    int euclideanDistanceSquared(Loc loc0, Loc loc1, int x_size);
+
+    std::string toString(Loc loc, int x_size, int y_size);
+    std::string toString(Loc loc, const Board& b);
+    std::string toStringMach(Loc loc, int x_size);
+    std::string toStringMach(Loc loc, const Board& b);
+
+    bool tryOfString(const std::string& str, int x_size, int y_size, Loc& result);
+    bool tryOfString(const std::string& str, const Board& b, Loc& result);
+    Loc ofString(const std::string& str, int x_size, int y_size);
+    Loc ofString(const std::string& str, const Board& b);
+
+    std::vector<Loc> parseSequence(const std::string& str, const Board& b);
+}
 
 static constexpr Player P_BLACK = 1;
 static constexpr Player P_WHITE = 2;
 
-static constexpr int BOARD_SIZE = 9;
-static constexpr int BOARD_ARR_SIZE = (BOARD_SIZE+1) * (BOARD_SIZE+1);
-static constexpr int ACTION_MAX_SIZE = BOARD_SIZE * BOARD_SIZE;
+static constexpr int MAX_LEN = 9;
+static constexpr int MAX_ARR_SIZE = (MAX_LEN+1) * (MAX_LEN+1);
+static constexpr int ACTION_MAX_SIZE = MAX_LEN * MAX_LEN;
 
 static constexpr Color C_EMPTY = 0;
 static constexpr Color C_BLACK = 1;
 static constexpr Color C_WHITE = 2;
-static constexpr Color C_NULL = 3;
+static constexpr Color C_WALL = 3;
 static constexpr int NUM_BOARD_COLORS = 4;
 
 static inline Color getOpp(Color c)
@@ -32,7 +65,7 @@ class Board
 public:
     //Constructors---------------------------------
     Board();  //Create Board of size (9,9)
-    Board(int x, int y); //Create Board of size (x,y)
+    Board(Size x, Size y); //Create Board of size (x,y)
     Board(const Board& other);
 
     //Check if moving here would be a self-capture
@@ -56,15 +89,18 @@ private:
 
     //Data--------------------------------------------
 
-    int x_size;                  //Horizontal size of board
-    int y_size;                  //Vertical size of board
-    Color colors[BOARD_ARR_SIZE];  //Color of each location on the board.
+    Size x_size;                  //Horizontal size of board
+    Size y_size;                  //Vertical size of board
+    Color colors[MAX_ARR_SIZE];  //Color of each location on the board.
 
     //Every chain of stones has one of its stones arbitrarily designated as the head.
-    ChainData chain_data[BOARD_ARR_SIZE]; //For each head stone, the chaindata for the chain under that head. Undefined otherwise.
-    Loc chain_head[BOARD_ARR_SIZE];       //Where is the head of this chain? Undefined if EMPTY or WALL
-    Loc next_in_chain[BOARD_ARR_SIZE];    //Location of next stone in chain. Circular linked list. Undefined if EMPTY or WALL
+    ChainData chain_data[MAX_ARR_SIZE]; //For each head stone, the chaindata for the chain under that head. Undefined otherwise.
+    Loc chain_head[MAX_ARR_SIZE];       //Where is the head of this chain? Undefined if EMPTY or WALL
+    Loc next_in_chain[MAX_ARR_SIZE];    //Location of next stone in chain. Circular linked list. Undefined if EMPTY or WALL
 
+    Size adj_offsets[8]; //Indices 0-3: Offsets to add for adjacent points. Indices 4-7: Offsets for diagonal points. 2 and 3 are +x and +y.
+
+    void init(Size xS, Size yS);
 };
 
 #endif //EXAMPLE_APP_BOARD_H
