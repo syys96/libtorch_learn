@@ -4,7 +4,7 @@
 
 #include "nogo.h"
 
-Nogo::Nogo(Size n, int first_color): n(n), cur_color(first_color)  {
+Nogo::Nogo(Size n, Player first_color): n(n), cur_color(first_color)  {
     board.init(n, n);
 }
 

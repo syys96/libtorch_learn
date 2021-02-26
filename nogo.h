@@ -15,7 +15,7 @@ public:
     using move_type = Loc;
     using board_type = Board;
 
-    Nogo(Size n, int first_color);
+    Nogo(Size n, Player first_color);
 
     bool has_legal_moves();
     Num get_legal_moves(std::vector<int>& legal_dist);
