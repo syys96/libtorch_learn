@@ -13,7 +13,7 @@ unsigned int func(unsigned int n)
     return n;
 }
 
-int test_thread_pool()
+int main()
 {
     ThreadPool thread_pool(4);
 

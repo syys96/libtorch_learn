@@ -12,9 +12,17 @@ find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 add_executable(example-app main.cpp board.cpp core/global.cpp
-        thread_pool.cpp tests/thread_pool_test.cpp nogo.h nogo.cpp)
+        thread_pool.cpp nogo.cpp)
 target_link_libraries(example-app "${TORCH_LIBRARIES}")
 set_property(TARGET example-app PROPERTY CXX_STANDARD 14)
+
+add_executable(thread_pool_test tests/thread_pool_test.cpp)
+target_link_libraries(thread_pool_test "${TORCH_LIBRARIES}")
+set_property(TARGET thread_pool_test PROPERTY CXX_STANDARD 14)
+
+add_executable(board_test tests/board_test.cpp board.cpp)
+target_link_libraries(board_test "${TORCH_LIBRARIES}")
+set_property(TARGET board_test PROPERTY CXX_STANDARD 14)
 
 # The following code block is suggested to be used on Windows.
 # According to https://github.com/pytorch/pytorch/issues/25457,

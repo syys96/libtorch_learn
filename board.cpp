@@ -362,13 +362,13 @@ void Board::print_board(Player curr_player) const {
     std::cout << "Board info, X(Black), O(Whitee), -(Empty)" << std::endl;
     std::cout << "Black num: " << black_legal_moves << ", White num: " << white_legal_moves << std::endl;
     std::cout << "Player to move now: " << (curr_player == P_BLACK ? "Black" : "White") << std::endl;
-    std::cout << " " << std::endl;
+    std::cout << "  ";
     for (Size i = 0; i < x_size; i++) {
-        std::cout << i << " ";
+        std::cout << i+1 << " ";
     }
     std::cout << std::endl;
     for(Size y = 0; y < y_size; y++) {
-        std::cout << y << " ";
+        std::cout << y+1 << " ";
         for(Size x = 0; x < x_size; x++) {
             Loc loc = (x+1) + (y+1)*(x_size+1);
             std::cout << (colors[loc] == C_BLACK ? "X " :
