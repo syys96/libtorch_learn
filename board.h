@@ -9,15 +9,16 @@
 #include "core/global.h"
 
 #ifndef COMPILE_MAX_BOARD_LEN
-#define COMPILE_MAX_BOARD_LEN 9
+#define COMPILE_MAX_BOARD_LEN static_cast<Size>(9)
 #endif
 
 struct Board;
 
 typedef int8_t Color;
-typedef short Loc;
-typedef short Size;
+typedef int16_t Loc;
+typedef int16_t Size;
 typedef int8_t Player;
+typedef int16_t Num;
 
 //Location of a point on the board
 //(x,y) is represented as (x+1) + (y+1)*(x_size+1)
@@ -50,6 +51,7 @@ namespace Location
 
 static constexpr Player P_BLACK = 1;
 static constexpr Player P_WHITE = 2;
+static constexpr Player P_NULL = 0;
 
 static constexpr Color C_EMPTY = 0;
 static constexpr Color C_BLACK = 1;
@@ -96,6 +98,12 @@ public:
     bool playMove(Loc loc, Player pla);
     // reset board
     void reset();
+    // return legal moves
+    Num get_leagal_moves(Player player);
+    // print board
+    void print_board(Player curr_player) const;
+    // return legal distribution
+    Num get_legal_move_dist(Player player, std::vector<int>& legal_dist);
 private:
     //Structs---------------------------------------
 
@@ -113,6 +121,12 @@ private:
     Size y_size;                  //Vertical size of board
     Color colors[MAX_ARR_SIZE];  //Color of each location on the board.
 
+    // updated with each move
+    bool black_legal_dist[MAX_ARR_SIZE];
+    bool white_legal_dist[MAX_ARR_SIZE];
+    Num black_legal_moves;
+    Num white_legal_moves;
+
     //Every chain of stones has one of its stones arbitrarily designated as the head.
     ChainData chain_data[MAX_ARR_SIZE]; //For each head stone, the chaindata for the chain under that head. Undefined otherwise.
     Loc chain_head[MAX_ARR_SIZE];       //Where is the head of this chain? Undefined if EMPTY or WALL
@@ -122,6 +136,7 @@ private:
 
     void mergeChains(Loc loc1, Loc loc2);
     bool isLibertyOf(Loc loc, Loc head) const;
+    void update_blank_legality(const std::vector<Loc>& locs);
 };
 
 #endif //EXAMPLE_APP_BOARD_H

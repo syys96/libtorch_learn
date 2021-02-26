@@ -18,21 +18,20 @@ public:
     Nogo(Size n, int first_color);
 
     bool has_legal_moves();
-    std::vector<int> get_legal_moves();
+    Num get_legal_moves(std::vector<int>& legal_dist);
     void execute_move(move_type move);
     std::vector<int> get_game_status();
     void display() const;
 
-    inline unsigned int get_action_size() const { return this->n * this->n; }
+    inline Size get_action_size() const { return this->n * this->n; }
     inline board_type get_board() const { return this->board; }
-    inline move_type get_last_move() const { return this->last_move; }
-    inline int get_current_color() const { return this->cur_color; }
-    inline unsigned int get_n() const { return this->n; }
+    inline Player get_current_color() const { return this->cur_color; }
+    inline Size get_n() const { return this->n; }
 
 private:
     board_type board;      // game borad
-    unsigned int n;        // board size
-    int cur_color;       // current player's color
+    Size n;        // board size
+    Player cur_color;       // current player's color
 };
 
 #endif //EXAMPLE_APP_NOGO_H

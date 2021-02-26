@@ -5,10 +5,10 @@
 #include "board.h"
 
 #define FOREACHADJ(BLOCK) {int ADJOFFSET = -(x_size+1); {BLOCK}; ADJOFFSET = -1; {BLOCK}; ADJOFFSET = 1; {BLOCK}; ADJOFFSET = x_size+1; {BLOCK}};
-#define ADJ0 (-(x_size+1))
-#define ADJ1 (-1)
-#define ADJ2 (1)
-#define ADJ3 (x_size+1)
+#define ADJ0 static_cast<Loc>(-(x_size+1))
+#define ADJ1 static_cast<Loc>(-1)
+#define ADJ2 static_cast<Loc>(1)
+#define ADJ3 static_cast<Loc>(x_size+1)
 
 bool Board::isSuicide(Loc loc, Player pla) const {
     Player opp = getOpp(pla);
@@ -91,13 +91,20 @@ void Board::init(Size xS, Size yS)
     y_size = yS;
 
     std::fill(colors, colors+MAX_ARR_SIZE, C_WALL);
+    std::fill(white_legal_dist, white_legal_dist+MAX_ARR_SIZE, false);
+    std::fill(black_legal_dist, black_legal_dist+MAX_ARR_SIZE, false);
 
     for(int y = 0; y < y_size; y++) {
         for(int x = 0; x < x_size; x++) {
             Loc loc = (x+1) + (y+1)*(x_size+1);
             colors[loc] = C_EMPTY;
+            black_legal_dist[loc] = true;
+            white_legal_dist[loc] = true;
         }
     }
+
+    black_legal_moves = xS * yS;
+    white_legal_moves = xS * yS;
 
     std::fill(chain_head, chain_head+MAX_ARR_SIZE, C_EMPTY);
     std::fill(next_in_chain, next_in_chain+MAX_ARR_SIZE, C_EMPTY);
@@ -168,6 +175,13 @@ void Board::playMoveAssumeLegal(Loc loc, Player pla)
     if(getNumLiberties(loc) == 0) {
         throw StringError("suicide is illegal in nogo!");
     }
+
+    // update blanks
+    std::vector<Loc> to_update{loc, static_cast<Loc>(loc+ADJ0),
+                               static_cast<Loc>(loc+ADJ1),
+                               static_cast<Loc>(loc+ADJ2),
+                               static_cast<Loc>(loc+ADJ3)};
+    update_blank_legality(to_update);
 }
 
 short Board::getNumImmediateLiberties(Loc loc) const {
@@ -268,22 +282,115 @@ Size Board::get_ysize() const {
 }
 
 void Board::reset() {
-    for(int i = 0; i < MAX_ARR_SIZE; i++)
-        colors[i] = C_WALL;
+    std::fill(colors, colors+MAX_ARR_SIZE, C_WALL);
+    std::fill(white_legal_dist, white_legal_dist+MAX_ARR_SIZE, false);
+    std::fill(black_legal_dist, black_legal_dist+MAX_ARR_SIZE, false);
 
-    for(int y = 0; y < y_size; y++)
-    {
-        for(int x = 0; x < x_size; x++)
-        {
+    for(int y = 0; y < y_size; y++) {
+        for(int x = 0; x < x_size; x++) {
             Loc loc = (x+1) + (y+1)*(x_size+1);
             colors[loc] = C_EMPTY;
+            black_legal_dist[loc] = true;
+            white_legal_dist[loc] = true;
         }
     }
+
+    black_legal_moves = x_size * y_size;
+    white_legal_moves = x_size * y_size;
 
     std::fill(chain_head, chain_head+MAX_ARR_SIZE, C_EMPTY);
     std::fill(next_in_chain, next_in_chain+MAX_ARR_SIZE, C_EMPTY);
     std::fill(chain_data, chain_data+MAX_ARR_SIZE, ChainData());
 }
+
+void Board::update_blank_legality(const std::vector<Loc> &locs) {
+    // make move will eat one blank for both players.
+    black_legal_moves--;
+    white_legal_moves--;
+
+    //Update the blanks near each chain of loc in locs
+    int num_chain_seen = 0;  //How many chains we have seen so far
+    Loc heads_chain_seen[4];   //Heads of the chains seen so far
+    bool blank_seen_dist[MAX_ARR_SIZE];
+    std::fill(blank_seen_dist, blank_seen_dist+MAX_ARR_SIZE, false);
+    for (auto& loc : locs) {
+        if (colors[loc] == C_EMPTY || colors[loc] == C_WALL)
+            continue;
+
+        Loc m_head = chain_head[loc];
+        //Have we seen this chain already?
+        bool seen = false;
+        for(int j = 0; j<num_chain_seen; j++)
+            if(heads_chain_seen[j] == m_head)
+                {seen = true; break;}
+        if(seen)
+            continue;
+
+        // iter in the chain and update every blank near the stone of this chain
+        // which is based on the fact that the legality of blanks not near the stone of this chain
+        // will not be affected by the make move action.
+        Loc stone_in_chain = m_head;
+        do {
+            FOREACHADJ(
+                    Loc adj = stone_in_chain + ADJOFFSET;
+                    // is this loc blank and we haven't updated it?
+                    if (colors[adj] == C_EMPTY && !blank_seen_dist[adj]) {
+                        bool old_black_legal = black_legal_dist[adj];
+                        bool old_white_legal = white_legal_dist[adj];
+                        black_legal_dist[adj] = isLegal(adj, P_BLACK);
+                        white_legal_dist[adj] = isLegal(adj, P_WHITE);
+                        if (old_black_legal && !black_legal_dist[adj]) {
+                            black_legal_moves--;
+                        }
+                        if (old_white_legal && !white_legal_dist[adj]) {
+                            white_legal_moves--;
+                        }
+                        blank_seen_dist[adj] = true;
+                    }
+                    );
+            stone_in_chain = next_in_chain[stone_in_chain];
+        } while (stone_in_chain != m_head);
+    }
+}
+
+Num Board::get_leagal_moves(Player player) {
+    return player == P_BLACK ? black_legal_moves : white_legal_moves;
+}
+
+void Board::print_board(Player curr_player) const {
+    std::cout << "---------------------" << std::endl;
+    std::cout << "Board info, X(Black), O(Whitee), -(Empty)" << std::endl;
+    std::cout << "Black num: " << black_legal_moves << ", White num: " << white_legal_moves << std::endl;
+    std::cout << "Player to move now: " << (curr_player == P_BLACK ? "Black" : "White") << std::endl;
+    std::cout << " " << std::endl;
+    for (Size i = 0; i < x_size; i++) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    for(Size y = 0; y < y_size; y++) {
+        std::cout << y << " ";
+        for(Size x = 0; x < x_size; x++) {
+            Loc loc = (x+1) + (y+1)*(x_size+1);
+            std::cout << (colors[loc] == C_BLACK ? "X " :
+                            (colors[loc] == C_WHITE ? "O " : "- "));
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "---------------------" << std::endl;
+}
+
+Num Board::get_legal_move_dist(Player player, std::vector<int>& legal_dist) {
+    bool* legal_bool = player == P_BLACK ? black_legal_dist : white_legal_dist;
+    for(int y = 0; y < y_size; y++) {
+        for(int x = 0; x < x_size; x++) {
+            Loc loc = (x+1) + (y+1)*(x_size+1);
+            legal_dist.emplace_back(legal_bool[loc] ? 1 : 0);
+        }
+    }
+    return player == P_BLACK ? black_legal_moves : white_legal_moves;
+}
+
 
 void Location::getAdjacentOffsets(Size adj_offsets[8], Size x_size)
 {
