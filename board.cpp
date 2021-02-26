@@ -90,16 +90,12 @@ void Board::init(Size xS, Size yS)
     x_size = xS;
     y_size = yS;
 
-    for(int i = 0; i < MAX_ARR_SIZE; i++)
-        colors[i] = C_WALL;
+    std::fill(colors, colors+MAX_ARR_SIZE, C_WALL);
 
-    for(int y = 0; y < y_size; y++)
-    {
-        for(int x = 0; x < x_size; x++)
-        {
+    for(int y = 0; y < y_size; y++) {
+        for(int x = 0; x < x_size; x++) {
             Loc loc = (x+1) + (y+1)*(x_size+1);
             colors[loc] = C_EMPTY;
-            // empty_list.add(loc);
         }
     }
 

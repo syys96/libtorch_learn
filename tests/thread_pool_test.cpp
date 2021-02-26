@@ -22,9 +22,9 @@ int test_thread_pool()
     auto r3 = thread_pool.commit(func, 3);
     auto r4 = thread_pool.commit(func, 4);
     auto r5 = thread_pool.commit(func, 5);
-    auto r6 = thread_pool.commit(func, 10);
-    auto r7 = thread_pool.commit(func, 20);
-    auto r8 = thread_pool.commit(func, 30);
+    auto r6 = thread_pool.commit(func, 6);
+    auto r7 = thread_pool.commit(func, 7);
+    auto r8 = thread_pool.commit(func, 8);
 
     std::cout << r1.get() << std::endl;
     std::cout << r2.get() << std::endl;
