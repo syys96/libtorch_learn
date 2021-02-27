@@ -17,6 +17,13 @@ TEST(test_board, test_not_capture_rule)
     std::vector<int> legal_dist_tmp;
     auto legal_num_black = board.get_legal_move_dist(P_BLACK, legal_dist_tmp);
     ASSERT_EQ(legal_dist_tmp[Location::getLocNN(6, 5, 9)], 0);
+    for (Loc ynn = 0; ynn < 9; ynn++) {
+        for (Loc xnn = 0; xnn < 9; xnn++) {
+            Loc locnn = Location::getLocNN(xnn,ynn,9);
+            std::cout << legal_dist_tmp[locnn] << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 TEST(test_board, test_not_suicide)
@@ -32,6 +39,13 @@ TEST(test_board, test_not_suicide)
     std::vector<int> legal_dist_tmp;
     auto legal_num_tmp = board.get_legal_move_dist(P_WHITE, legal_dist_tmp);
     ASSERT_EQ(legal_dist_tmp[Location::getLocNN(5,5,9)], 0);
+    for (Loc ynn = 0; ynn < 9; ynn++) {
+        for (Loc xnn = 0; xnn < 9; xnn++) {
+            Loc locnn = Location::getLocNN(xnn,ynn,9);
+            std::cout << legal_dist_tmp[locnn] << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 void test_legal_dist()
