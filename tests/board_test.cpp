@@ -11,6 +11,7 @@ TEST(test_board, test_not_capture_rule)
     board.playMoveAssumeLegal(4,5,P_BLACK);
     board.playMoveAssumeLegal(5,6,P_BLACK);
     board.playMoveAssumeLegal(5, 5, P_WHITE);
+    board.playMoveAssumeLegal(8,2, P_BLACK);
     board.print_board(P_BLACK);
     board.print_legal_dist(P_BLACK);
 
@@ -33,6 +34,7 @@ TEST(test_board, test_not_suicide)
     board.playMoveAssumeLegal(4,5,P_BLACK);
     board.playMoveAssumeLegal(5,6,P_BLACK);
     board.playMoveAssumeLegal(6, 5, P_BLACK);
+    board.playMoveAssumeLegal(8,2, P_BLACK);
     board.print_board(P_BLACK);
     board.print_legal_dist(P_WHITE);
 
