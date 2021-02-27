@@ -337,8 +337,14 @@ void Board::update_blank_legality(const std::vector<Loc> &locs) {
                         if (old_black_legal && !black_legal_dist[adj]) {
                             black_legal_moves--;
                         }
+                        if (!old_black_legal && black_legal_dist[adj]) {
+                            black_legal_moves++;
+                        }
                         if (old_white_legal && !white_legal_dist[adj]) {
                             white_legal_moves--;
+                        }
+                        if (!old_white_legal && white_legal_dist[adj]) {
+                            white_legal_moves++;
                         }
                         blank_seen_dist[adj] = true;
                     }
