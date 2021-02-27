@@ -117,6 +117,10 @@ void Board::playMoveAssumeLegal(Loc loc, Player pla)
 
     Player opp = getOpp(pla);
 
+    const auto& legal_bool_tmp = pla == P_BLACK ? black_legal_dist : white_legal_dist;
+    if (!legal_bool_tmp[loc]) {
+        throw std::runtime_error("wtf");
+    }
     //Add the new stone as an independent group
     colors[loc] = pla;
     chain_data[loc].owner = pla;
@@ -404,6 +408,10 @@ Num Board::get_legal_move_dist(Player player, std::vector<int>& legal_dist) {
 
 bool Board::playMove(Loc x, Loc y, Player pla) {
     Loc loc = Location::getLoc(x, y, x_size);
+    const auto& legal_bool = pla == P_BLACK ? black_legal_dist : white_legal_dist;
+    if (isLegal(loc,pla) != legal_bool[loc]) {
+        throw std::runtime_error("not equal!");
+    }
     if(isLegal(loc,pla))
     {
         playMoveAssumeLegal(loc,pla);

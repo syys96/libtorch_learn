@@ -29,9 +29,25 @@ Player parase_botzone(Board& main_board)
     for (int i = 0; i < turnID; i++)
     {
         x=input["requests"][i]["x"].asInt(), y=input["requests"][i]["y"].asInt();
-        if (x!=-1) main_board.playMoveAssumeLegal(x, y, getOpp(me));
+        if (x!=-1) {
+            bool islegal = main_board.playMove(x, y, getOpp(me));
+            if (!islegal) {
+                main_board.print_board(getOpp(me));
+                main_board.print_legal_dist(getOpp(me));
+                std::cout << "making move at: " << x << ", " << y << std::endl;
+                throw std::runtime_error("?????");
+            }
+        }
         x=input["responses"][i]["x"].asInt(), y=input["responses"][i]["y"].asInt();
-        if (x!=-1) main_board.playMoveAssumeLegal(x, y, me);
+        if (x!=-1){
+            bool islegal = main_board.playMove(x, y, me);
+            if (!islegal) {
+                main_board.print_board(me);
+                main_board.print_legal_dist(me);
+                std::cout << "making move at: " << x << ", " << y << std::endl;
+                throw std::runtime_error("?????");
+            }
+        }
     }
     x=input["requests"][turnID]["x"].asInt(), y=input["requests"][turnID]["y"].asInt();
     if (x!=-1) main_board.playMoveAssumeLegal(x, y, getOpp(me));
