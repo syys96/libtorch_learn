@@ -38,9 +38,18 @@ void test_legal_dist()
 {
     Board board(9, 9);
     board.playMoveAssumeLegal(5, 4, P_BLACK);
+    board.playMoveAssumeLegal(6, 4, P_BLACK);
     board.playMoveAssumeLegal(4,5,P_BLACK);
     board.playMoveAssumeLegal(5,6,P_BLACK);
     board.playMoveAssumeLegal(5, 5, P_WHITE);
+    board.playMoveAssumeLegal(4, 4, P_WHITE);
+    board.playMoveAssumeLegal(4, 3, P_WHITE);
+    board.playMoveAssumeLegal(5, 3, P_WHITE);
+    board.playMoveAssumeLegal(6, 3, P_WHITE);
+    board.playMoveAssumeLegal(7, 3, P_WHITE);
+    board.playMoveAssumeLegal(7, 4, P_WHITE);
+    board.playMoveAssumeLegal(7, 5, P_WHITE);
+    board.playMoveAssumeLegal(6, 6, P_WHITE);
     board.print_board(P_BLACK);
     board.print_legal_dist(P_BLACK);
     board.print_legal_dist(P_WHITE);
