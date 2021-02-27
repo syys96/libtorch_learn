@@ -15,11 +15,11 @@
 
 Player parase_botzone(Board& main_board)
 {
-    std::string str;
     int x,y;
     // 读入JSON
+    std::string str;
     getline(std::cin,str);
-    //getline(cin, str);
+//    std::string str = std::string("{\"requests\":[{\"x\":-1,\"y\":-1},{\"x\":1,\"y\":1},{\"x\":0,\"y\":8},{\"x\":8,\"y\":0},{\"x\":8,\"y\":8},{\"x\":0,\"y\":4},{\"x\":7,\"y\":0},{\"x\":7,\"y\":2},{\"x\":8,\"y\":3},{\"x\":3,\"y\":0},{\"x\":0,\"y\":2},{\"x\":2,\"y\":3},{\"x\":6,\"y\":7},{\"x\":3,\"y\":2},{\"x\":3,\"y\":5},{\"x\":1,\"y\":8},{\"x\":1,\"y\":6},{\"x\":5,\"y\":0},{\"x\":2,\"y\":7},{\"x\":4,\"y\":7},{\"x\":5,\"y\":3},{\"x\":1,\"y\":5},{\"x\":4,\"y\":1},{\"x\":5,\"y\":5},{\"x\":6,\"y\":4},{\"x\":8,\"y\":5},{\"x\":7,\"y\":6},{\"x\":6,\"y\":2},{\"x\":3,\"y\":6},{\"x\":2,\"y\":5},{\"x\":6,\"y\":8},{\"x\":8,\"y\":4},{\"x\":1,\"y\":4},{\"x\":2,\"y\":6},{\"x\":8,\"y\":6},{\"x\":7,\"y\":5}],\"responses\":[{\"x\":0,\"y\":0},{\"x\":2,\"y\":0},{\"x\":1,\"y\":7},{\"x\":7,\"y\":1},{\"x\":7,\"y\":7},{\"x\":6,\"y\":0},{\"x\":8,\"y\":2},{\"x\":1,\"y\":2},{\"x\":2,\"y\":1},{\"x\":0,\"y\":3},{\"x\":2,\"y\":2},{\"x\":6,\"y\":6},{\"x\":1,\"y\":0},{\"x\":5,\"y\":8},{\"x\":2,\"y\":8},{\"x\":0,\"y\":6},{\"x\":5,\"y\":1},{\"x\":3,\"y\":7},{\"x\":5,\"y\":2},{\"x\":4,\"y\":3},{\"x\":3,\"y\":4},{\"x\":4,\"y\":4},{\"x\":3,\"y\":1},{\"x\":4,\"y\":2},{\"x\":7,\"y\":4},{\"x\":6,\"y\":5},{\"x\":5,\"y\":6},{\"x\":6,\"y\":3},{\"x\":4,\"y\":5},{\"x\":4,\"y\":8},{\"x\":8,\"y\":7},{\"x\":2,\"y\":4},{\"x\":1,\"y\":3},{\"x\":5,\"y\":7},{\"x\":0,\"y\":5}]}");
     Json::Reader reader;
     Json::Value input;
     reader.parse(str, input);
@@ -50,7 +50,15 @@ Player parase_botzone(Board& main_board)
         }
     }
     x=input["requests"][turnID]["x"].asInt(), y=input["requests"][turnID]["y"].asInt();
-    if (x!=-1) main_board.playMoveAssumeLegal(x, y, getOpp(me));
+    if (x!=-1) {
+        bool islegal = main_board.playMove(x, y, getOpp(me));
+        if (!islegal) {
+            main_board.print_board(getOpp(me));
+            main_board.print_legal_dist(getOpp(me));
+            std::cout << "making move at: " << x << ", " << y << std::endl;
+            throw std::runtime_error("?????");
+        }
+    }
     return me;
 }
 

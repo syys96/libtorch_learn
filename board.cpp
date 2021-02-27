@@ -111,9 +111,9 @@ void Board::init(Size xS, Size yS)
 
 void Board::playMoveAssumeLegal(Loc loc, Player pla)
 {
-    std::cout << black_legal_moves << " vs(before) "
-              << std::count(black_legal_dist.begin(),black_legal_dist.end(), true)
-              << std::endl;
+//    std::cout << black_legal_moves << " vs(before) "
+//              << std::count(black_legal_dist.begin(),black_legal_dist.end(), true)
+//              << std::endl;
 
     Player opp = getOpp(pla);
 
