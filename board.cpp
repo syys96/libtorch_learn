@@ -4,12 +4,6 @@
 
 #include "board.h"
 
-#define FOREACHADJ(BLOCK) {int ADJOFFSET = -(x_size+1); {BLOCK}; ADJOFFSET = -1; {BLOCK}; ADJOFFSET = 1; {BLOCK}; ADJOFFSET = x_size+1; {BLOCK}};
-#define ADJ0 static_cast<Loc>(-(x_size+1))
-#define ADJ1 static_cast<Loc>(-1)
-#define ADJ2 static_cast<Loc>(1)
-#define ADJ3 static_cast<Loc>(x_size+1)
-
 bool Board::isSuicide(Loc loc, Player pla) const {
     Player opp = getOpp(pla);
     FOREACHADJ(
@@ -94,14 +88,11 @@ void Board::init(Size xS, Size yS)
     std::fill(white_legal_dist, white_legal_dist+MAX_ARR_SIZE, false);
     std::fill(black_legal_dist, black_legal_dist+MAX_ARR_SIZE, false);
 
-    for(int y = 0; y < y_size; y++) {
-        for(int x = 0; x < x_size; x++) {
-            Loc loc = (x+1) + (y+1)*(x_size+1);
+    FOREACHONBOARD(
             colors[loc] = C_EMPTY;
             black_legal_dist[loc] = true;
             white_legal_dist[loc] = true;
-        }
-    }
+            )
 
     black_legal_moves = xS * yS;
     white_legal_moves = xS * yS;
@@ -286,14 +277,11 @@ void Board::reset() {
     std::fill(white_legal_dist, white_legal_dist+MAX_ARR_SIZE, false);
     std::fill(black_legal_dist, black_legal_dist+MAX_ARR_SIZE, false);
 
-    for(int y = 0; y < y_size; y++) {
-        for(int x = 0; x < x_size; x++) {
-            Loc loc = (x+1) + (y+1)*(x_size+1);
+    FOREACHONBOARD(
             colors[loc] = C_EMPTY;
             black_legal_dist[loc] = true;
             white_legal_dist[loc] = true;
-        }
-    }
+            )
 
     black_legal_moves = x_size * y_size;
     white_legal_moves = x_size * y_size;
@@ -361,7 +349,7 @@ void Board::print_board(Player curr_player) const {
     std::cout << "---------------------" << std::endl;
     std::cout << "Board info, X(Black), O(Whitee), -(Empty)" << std::endl;
     std::cout << "Black num: " << black_legal_moves << ", White num: " << white_legal_moves << std::endl;
-    std::cout << "Player to move now: " << (curr_player == P_BLACK ? "Black" : "White") << std::endl;
+    std::cout << "Player to move now: " << (curr_player == P_BLACK ? "Black(X)" : "White(O)") << std::endl;
     std::cout << "  ";
     for (Size i = 0; i < x_size; i++) {
         std::cout << i+1 << " ";
@@ -382,15 +370,41 @@ void Board::print_board(Player curr_player) const {
 
 Num Board::get_legal_move_dist(Player player, std::vector<int>& legal_dist) {
     bool* legal_bool = player == P_BLACK ? black_legal_dist : white_legal_dist;
-    for(int y = 0; y < y_size; y++) {
-        for(int x = 0; x < x_size; x++) {
-            Loc loc = (x+1) + (y+1)*(x_size+1);
+    FOREACHONBOARD(
             legal_dist.emplace_back(legal_bool[loc] ? 1 : 0);
-        }
-    }
+            )
     return player == P_BLACK ? black_legal_moves : white_legal_moves;
 }
 
+bool Board::playMove(Loc x, Loc y, Player pla) {
+    Loc loc = Location::getLoc(x, y, x_size);
+    if(isLegal(loc,pla))
+    {
+        playMoveAssumeLegal(loc,pla);
+        return true;
+    }
+    return false;
+}
+
+void Board::playMoveAssumeLegal(Loc x, Loc y, Player pla) {
+    Loc loc = Location::getLoc(x, y, x_size);
+    playMoveAssumeLegal(loc, pla);
+}
+
+
+//LOCATION--------------------------------------------------------------------------------
+Loc Location::getLoc(Loc x, Loc y, Size x_size)
+{
+    return (x+1) + (y+1)*(x_size+1);
+}
+Loc Location::getX(Loc loc, int x_size)
+{
+    return (loc % (x_size+1)) - 1;
+}
+Loc Location::getY(Loc loc, int x_size)
+{
+    return (loc / (x_size+1)) - 1;
+}
 
 void Location::getAdjacentOffsets(Size adj_offsets[8], Size x_size)
 {

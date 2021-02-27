@@ -20,13 +20,21 @@ typedef int16_t Size;
 typedef int8_t Player;
 typedef int16_t Num;
 
+#define FOREACHADJ(BLOCK) {int ADJOFFSET = -(x_size+1); {BLOCK}; ADJOFFSET = -1; {BLOCK}; ADJOFFSET = 1; {BLOCK}; ADJOFFSET = x_size+1; {BLOCK}};
+#define ADJ0 static_cast<Loc>(-(x_size+1))
+#define ADJ1 static_cast<Loc>(-1)
+#define ADJ2 static_cast<Loc>(1)
+#define ADJ3 static_cast<Loc>(x_size+1)
+#define FOREACHONBOARD(BLOCK) {for(Loc y = 0; y < y_size; y++) { for(Loc x = 0; x < x_size; x++) {Loc loc=Location::getLoc(x, y, x_size); {BLOCK}}}}
+
+
 //Location of a point on the board
 //(x,y) is represented as (x+1) + (y+1)*(x_size+1)
 namespace Location
 {
-    Loc getLoc(int x, int y, int x_size);
-    int getX(Loc loc, int x_size);
-    int getY(Loc loc, int x_size);
+    Loc getLoc(Loc x, Loc y, Size x_size);
+    Loc getX(Loc loc, int x_size);
+    Loc getY(Loc loc, int x_size);
 
     void getAdjacentOffsets(Size adj_offsets[8], Size x_size);
     bool isAdjacent(Loc loc0, Loc loc1, int x_size);
@@ -86,6 +94,8 @@ public:
     bool isLegal(Loc loc, Player pla) const;
     //Plays the specified move, assuming it is legal.
     void playMoveAssumeLegal(Loc loc, Player pla);
+    // Plays x y
+    void playMoveAssumeLegal(Loc x, Loc y, Player pla);
     //Gets the number of empty spaces directly adjacent to this location
     short getNumImmediateLiberties(Loc loc) const;
     // init board
@@ -96,6 +106,8 @@ public:
     Size get_ysize() const;
     //Attempts to play the specified move. Returns true if successful, returns false if the move was illegal.
     bool playMove(Loc loc, Player pla);
+    // play x y
+    bool playMove(Loc x, Loc y, Player pla);
     // reset board
     void reset();
     // return legal moves
