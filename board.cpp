@@ -175,6 +175,9 @@ void Board::playMoveAssumeLegal(Loc loc, Player pla)
     // update blanks
     black_legal_dist[loc] = false;
     white_legal_dist[loc] = false;
+    // make move will eat one blank for both players.
+    black_legal_moves--;
+    white_legal_moves--;
     std::vector<Loc> to_update{loc, static_cast<Loc>(loc+ADJ0),
                                static_cast<Loc>(loc+ADJ1),
                                static_cast<Loc>(loc+ADJ2),
@@ -299,9 +302,6 @@ void Board::reset() {
 }
 
 void Board::update_blank_legality(const std::vector<Loc> &locs) {
-    // make move will eat one blank for both players.
-    black_legal_moves--;
-    white_legal_moves--;
 
     //Update the blanks near each chain of loc in locs
     int num_chain_seen = 0;  //How many chains we have seen so far
