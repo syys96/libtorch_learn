@@ -88,8 +88,8 @@ void Board::init(Size xS, Size yS)
     y_size = yS;
 
     std::fill(colors, colors+MAX_ARR_SIZE, C_WALL);
-    white_legal_dist.resize(xS*yS, false);
-    black_legal_dist.resize(xS*yS, false);
+    white_legal_dist.resize(MAX_ARR_SIZE, false);
+    black_legal_dist.resize(MAX_ARR_SIZE, false);
     std::fill(white_legal_dist.begin(), white_legal_dist.end(), false);
     std::fill(black_legal_dist.begin(), black_legal_dist.end(), false);
 
@@ -405,7 +405,7 @@ void Board::print_legal_dist(Player pla) const {
     std::cout << "Legal info, O(Legal), -(Illegal)" << std::endl;
     std::cout << "Player: " << (pla == P_BLACK ? "Black(X)" : "White(O)") << std::endl;
     std::cout << "Legal num: " << (pla == P_BLACK ? black_legal_moves : white_legal_moves) << std::endl;
-    auto legal_dist_tmp = (pla == P_BLACK ? black_legal_dist : white_legal_dist);
+    const auto& legal_dist_tmp = (pla == P_BLACK ? black_legal_dist : white_legal_dist);
     std::cout << "  ";
     for (Size i = 0; i < x_size; i++) {
         std::cout << i << " ";
