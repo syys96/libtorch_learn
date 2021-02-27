@@ -189,18 +189,6 @@ void Board::playMoveAssumeLegal(Loc loc, Player pla)
         white_legal_moves--;
     }
 
-    if (black_legal_moves != std::count(black_legal_dist.begin(),
-                                        black_legal_dist.end(), true)) {
-        std::cout << "make loc: " << loc << std::endl;
-        std::cout << "updating blank eaten: " << loc << std::endl;
-        std::cout << black_legal_moves << " vs(after) "
-                  << std::count(black_legal_dist.begin(),black_legal_dist.end(), true)
-                  << std::endl;
-        print_board(P_BLACK);
-        print_legal_dist(P_BLACK);
-        print_legal_dist(P_WHITE);
-        throw std::runtime_error("fuck!!!");
-    }
     std::vector<Loc> to_update{loc, static_cast<Loc>(loc+ADJ0),
                                static_cast<Loc>(loc+ADJ1),
                                static_cast<Loc>(loc+ADJ2),
@@ -368,18 +356,6 @@ void Board::update_blank_legality(const std::vector<Loc> &locs) {
                         }
                         if (!old_white_legal && white_legal_dist[adj]) {
                             white_legal_moves++;
-                        }
-                        if (black_legal_moves != std::count(black_legal_dist.begin(),
-                                black_legal_dist.end(), true)) {
-                            std::cout << "make loc: " << locs[0] << std::endl;
-                            std::cout << "updating loc: " << adj << std::endl;
-                            std::cout << black_legal_moves << " vs "
-                                    << std::count(black_legal_dist.begin(),black_legal_dist.end(), true)
-                                    << std::endl;
-                            print_board(P_BLACK);
-                            print_legal_dist(P_BLACK);
-                            print_legal_dist(P_WHITE);
-                            throw std::runtime_error("fuck!!!");
                         }
                         blank_seen_dist[adj] = true;
                     }
