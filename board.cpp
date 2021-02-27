@@ -73,7 +73,10 @@ Board::Board(const Board &other) {
     memcpy(chain_head, other.chain_head, sizeof(Loc)*MAX_ARR_SIZE);
     memcpy(next_in_chain, other.next_in_chain, sizeof(Loc)*MAX_ARR_SIZE);
 
-    memcpy(adj_offsets, other.adj_offsets, sizeof(short)*8);
+    black_legal_dist = other.black_legal_dist;
+    white_legal_dist = other.white_legal_dist;
+
+    memcpy(adj_offsets, other.adj_offsets, sizeof(Size)*8);
 }
 
 void Board::init(Size xS, Size yS)
@@ -85,8 +88,10 @@ void Board::init(Size xS, Size yS)
     y_size = yS;
 
     std::fill(colors, colors+MAX_ARR_SIZE, C_WALL);
-    std::fill(white_legal_dist, white_legal_dist+MAX_ARR_SIZE, false);
-    std::fill(black_legal_dist, black_legal_dist+MAX_ARR_SIZE, false);
+    white_legal_dist.resize(xS*yS, false);
+    black_legal_dist.resize(xS*yS, false);
+    std::fill(white_legal_dist.begin(), white_legal_dist.end(), false);
+    std::fill(black_legal_dist.begin(), black_legal_dist.end(), false);
 
     FOREACHONBOARD(
             colors[loc] = C_EMPTY;
@@ -168,6 +173,8 @@ void Board::playMoveAssumeLegal(Loc loc, Player pla)
     }
 
     // update blanks
+    black_legal_dist[loc] = false;
+    white_legal_dist[loc] = false;
     std::vector<Loc> to_update{loc, static_cast<Loc>(loc+ADJ0),
                                static_cast<Loc>(loc+ADJ1),
                                static_cast<Loc>(loc+ADJ2),
@@ -274,8 +281,8 @@ Size Board::get_ysize() const {
 
 void Board::reset() {
     std::fill(colors, colors+MAX_ARR_SIZE, C_WALL);
-    std::fill(white_legal_dist, white_legal_dist+MAX_ARR_SIZE, false);
-    std::fill(black_legal_dist, black_legal_dist+MAX_ARR_SIZE, false);
+    std::fill(white_legal_dist.begin(), white_legal_dist.end(), false);
+    std::fill(black_legal_dist.begin(), black_legal_dist.end(), false);
 
     FOREACHONBOARD(
             colors[loc] = C_EMPTY;
@@ -352,11 +359,11 @@ void Board::print_board(Player curr_player) const {
     std::cout << "Player to move now: " << (curr_player == P_BLACK ? "Black(X)" : "White(O)") << std::endl;
     std::cout << "  ";
     for (Size i = 0; i < x_size; i++) {
-        std::cout << i+1 << " ";
+        std::cout << i << " ";
     }
     std::cout << std::endl;
     for(Size y = 0; y < y_size; y++) {
-        std::cout << y+1 << " ";
+        std::cout << y << " ";
         for(Size x = 0; x < x_size; x++) {
             Loc loc = (x+1) + (y+1)*(x_size+1);
             std::cout << (colors[loc] == C_BLACK ? "X " :
@@ -369,9 +376,11 @@ void Board::print_board(Player curr_player) const {
 }
 
 Num Board::get_legal_move_dist(Player player, std::vector<int>& legal_dist) {
-    bool* legal_bool = player == P_BLACK ? black_legal_dist : white_legal_dist;
+    legal_dist.resize(x_size*y_size, -1);
+    const auto& legal_bool = player == P_BLACK ? black_legal_dist : white_legal_dist;
     FOREACHONBOARD(
-            legal_dist.emplace_back(legal_bool[loc] ? 1 : 0);
+            Loc locNN = Location::getLocNN(x, y, x_size);
+            legal_dist[locNN] = legal_bool[loc] ? 1 : 0;
             )
     return player == P_BLACK ? black_legal_moves : white_legal_moves;
 }
@@ -391,6 +400,29 @@ void Board::playMoveAssumeLegal(Loc x, Loc y, Player pla) {
     playMoveAssumeLegal(loc, pla);
 }
 
+void Board::print_legal_dist(Player pla) const {
+    std::cout << "---------------------" << std::endl;
+    std::cout << "Legal info, O(Legal), -(Illegal)" << std::endl;
+    std::cout << "Player: " << (pla == P_BLACK ? "Black(X)" : "White(O)") << std::endl;
+    std::cout << "Legal num: " << (pla == P_BLACK ? black_legal_moves : white_legal_moves) << std::endl;
+    auto legal_dist_tmp = (pla == P_BLACK ? black_legal_dist : white_legal_dist);
+    std::cout << "  ";
+    for (Size i = 0; i < x_size; i++) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    for(Size y = 0; y < y_size; y++) {
+        std::cout << y << " ";
+        for(Size x = 0; x < x_size; x++) {
+            Loc loc = Location::getLoc(x, y, x_size);
+            std::cout << (legal_dist_tmp[loc] ? "O " : "- ");
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "---------------------" << std::endl;
+}
+
 
 //LOCATION--------------------------------------------------------------------------------
 Loc Location::getLoc(Loc x, Loc y, Size x_size)
@@ -404,6 +436,19 @@ Loc Location::getX(Loc loc, int x_size)
 Loc Location::getY(Loc loc, int x_size)
 {
     return (loc / (x_size+1)) - 1;
+}
+
+Loc Location::getLocNN(Loc x, Loc y, Size x_size)
+{
+    return (x) + (y)*(x_size);
+}
+Loc Location::getXNN(Loc loc, int x_size)
+{
+    return (loc % (x_size));
+}
+Loc Location::getYNN(Loc loc, int x_size)
+{
+    return (loc / (x_size));
 }
 
 void Location::getAdjacentOffsets(Size adj_offsets[8], Size x_size)

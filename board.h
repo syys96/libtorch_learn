@@ -35,6 +35,9 @@ namespace Location
     Loc getLoc(Loc x, Loc y, Size x_size);
     Loc getX(Loc loc, int x_size);
     Loc getY(Loc loc, int x_size);
+    Loc getLocNN(Loc x, Loc y, Size x_size);
+    Loc getXNN(Loc loc, int x_size);
+    Loc getYNN(Loc loc, int x_size);
 
     void getAdjacentOffsets(Size adj_offsets[8], Size x_size);
     bool isAdjacent(Loc loc0, Loc loc1, int x_size);
@@ -74,7 +77,7 @@ class Board
 {
 public:
     static constexpr int MAX_LEN = COMPILE_MAX_BOARD_LEN;
-    static constexpr int MAX_ARR_SIZE = (MAX_LEN+1) * (MAX_LEN+1);
+    static constexpr int MAX_ARR_SIZE = (MAX_LEN+2) * (MAX_LEN+2);
     static constexpr int ACTION_MAX_SIZE = MAX_LEN * MAX_LEN;
 
     //Constructors---------------------------------
@@ -116,6 +119,8 @@ public:
     void print_board(Player curr_player) const;
     // return legal distribution
     Num get_legal_move_dist(Player player, std::vector<int>& legal_dist);
+    // print legal info
+    void print_legal_dist(Player pla) const;
 private:
     //Structs---------------------------------------
 
@@ -134,8 +139,8 @@ private:
     Color colors[MAX_ARR_SIZE];  //Color of each location on the board.
 
     // updated with each move
-    bool black_legal_dist[MAX_ARR_SIZE];
-    bool white_legal_dist[MAX_ARR_SIZE];
+    std::vector<bool> black_legal_dist;
+    std::vector<bool> white_legal_dist;
     Num black_legal_moves;
     Num white_legal_moves;
 
