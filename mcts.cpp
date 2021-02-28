@@ -2,12 +2,12 @@
 // Created by syys on 2021/2/28.
 //
 
-#include <math.h>
-#include <float.h>
+#include <cmath>
+#include <cfloat>
 #include <numeric>
 #include <iostream>
-#include <time.h>
-#include <stdlib.h>
+#include <ctime>
+#include <cstdlib>
 #include "mcts.h"
 
 TreeNode::TreeNode(uint32_t action_dim) :
@@ -155,7 +155,7 @@ double TreeNode::get_value(double c_puct, uint32_t sum_N) const
 #endif // !SINGLE_THREAD
 }
 
-bool TreeNode::expand(const at::Tensor &prior, const std::vector<bool> &legal_action)
+bool TreeNode::expand(const at::Tensor &prior, const std::vector<int> &legal_action)
 {
 #ifndef SINGLE_THREAD
     std::lock_guard<std::mutex> temp_lock(this->lock);
@@ -165,7 +165,7 @@ bool TreeNode::expand(const at::Tensor &prior, const std::vector<bool> &legal_ac
         uint32_t action_dim = this->children.size(), i = 0;
         for (i = 0; i < action_dim; i++)
         {
-            if (legal_action[i])
+            if (legal_action[i] == 1)
             {
                 this->children[i] = new TreeNode(this, prior[i].item().toDouble(), action_dim);
             }
@@ -258,12 +258,12 @@ uint32_t binary_search(std::vector<double> &values, double target)
     return i;
 }
 
-uint32_t MCTS::get_action(Gomoku *gomoku, bool explore)
+Loc MCTS::get_action(Nogo *nogo, bool explore)
 {
-    return this->get_action(this->get_action_prob(gomoku), explore);
+    return this->get_action(this->get_action_prob(nogo), explore);
 }
 
-uint32_t MCTS::get_action(std::vector<double> action_prob, bool explore)
+Loc MCTS::get_action(std::vector<double> action_prob, bool explore)
 {
     uint32_t n = action_prob.size(), i = 0;
     // srand(time(0));
@@ -295,17 +295,17 @@ uint32_t MCTS::get_action(std::vector<double> action_prob, bool explore)
     return i;
 }
 
-std::vector<double> MCTS::get_action_prob(Gomoku *gomoku)
+std::vector<double> MCTS::get_action_prob(Nogo *nogo)
 {
     uint32_t i;
     // 根节点还未扩展，先扩展根节点
-    if (this->root->leaf) this->simulate(gomoku);
+    if (this->root->leaf) this->simulate(nogo);
 #ifndef SINGLE_THREAD
     std::vector<std::future<void>> futures;
     for (i = 0; i < this->n_simulate; i++)
     {
         // 提交模拟任务到线程池
-        auto future = this->thread_pool->commit(std::bind(&MCTS::simulate, this, gomoku));
+        auto future = this->thread_pool->commit(std::bind(&MCTS::simulate, this, nogo));
         futures.emplace_back(std::move(future));
     }
     // 等待模拟结束
@@ -358,7 +358,7 @@ std::vector<double> MCTS::get_action_prob(Gomoku *gomoku)
     return action_prob;
 }
 
-void MCTS::simulate(Gomoku *gomoku)
+void MCTS::simulate(Nogo *nogo)
 {
     // 单次模拟
     // 模拟是否成功
@@ -370,7 +370,7 @@ void MCTS::simulate(Gomoku *gomoku)
     while (!success)
     {
         // 复制游戏状态
-        Gomoku game = *gomoku;
+        Nogo game = *nogo;
         node = root;
         while (!node->leaf)
         {
@@ -390,7 +390,8 @@ void MCTS::simulate(Gomoku *gomoku)
             // std::cout << value << std::endl;
             // std::cout << pred[0][0] << std::endl;
 
-            std::vector<bool> legal_move = game.get_legal_move();
+            std::vector<int> legal_move;
+            game.get_legal_moves(legal_move);
             // 扩展
             at::Tensor prior = pred[0][0].to(torch::kCPU);
             if (this->add_noise)
@@ -403,8 +404,8 @@ void MCTS::simulate(Gomoku *gomoku)
         else
         {
             // 游戏结束 实际价值（以当前玩家为视角）
-            int winner = res[1];
-            value = winner == 0 ? 0 : (winner == game.get_curr_player() ? 1 : -1);
+            Player winner = res[1];
+            value = winner == P_NULL ? 0 : (winner == game.get_current_color() ? 1 : -1);
             success = true;
         }
         // 当前状态的前一步动作为对手方落子，价值取反
@@ -414,13 +415,13 @@ void MCTS::simulate(Gomoku *gomoku)
     //std::printf("simulation : %d\n", clock() - ts);
 }
 
-int MCTS::self_play(Gomoku *gomoku, std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values,
+int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values,
                     double temp, uint32_t n_round, bool add_noise, bool show)
 {
     std::vector<int> res(2, 0);
     uint32_t move;
     int idx;
-    gomoku->reset();
+    nogo->reset();
     // 起始温度参数
     this->temp = temp;
     this->add_noise = add_noise;
@@ -428,7 +429,7 @@ int MCTS::self_play(Gomoku *gomoku, std::vector<at::Tensor> &states, std::vector
     if (show)
     {
         std::cout << "New game." << std::endl;
-        gomoku->display();
+        nogo->display();
     }
     std::vector<double> action_prob;
     std::vector<int> players;
@@ -444,32 +445,35 @@ int MCTS::self_play(Gomoku *gomoku, std::vector<at::Tensor> &states, std::vector
     }
     while (0 == res[0])
     {
-        idx = gomoku->get_curr_player();
+        idx = nogo->get_current_color();
         // 训练数据缓存不用CUDA
-        state = gomoku->curr_state(false, this->network->device);
+        state = nogo->curr_state(false, this->network->device);
         //ts = clock();
-        action_prob = this->get_action_prob(gomoku);
+        action_prob = this->get_action_prob(nogo);
         //std::printf("get_action_prob : %d\n", clock() - ts);
         move = this->get_action(action_prob);
         if (show)
         {
-            std::printf("Player '%c' : %d %d\n", gomoku->get_symbol(idx), move / gomoku->get_n(), move % gomoku->get_n());
+            Size xsize = nogo->get_n();
+            Loc locx = Location::getX(move, xsize);
+            Loc locy = Location::getY(move, xsize);
+            std::printf("Player '%c' : %d %d\n", Nogo::get_symbol(idx), locx, locy);
         }
-        if (gomoku->execute_move(move))
+        if (nogo->execute_move(move))
         {
             this->update_with_move(move);
             states.emplace_back(state);
             probs.emplace_back(torch::tensor(action_prob));
             players.emplace_back(idx);
-            res = gomoku->get_game_status();
-            if (show) gomoku->display();
+            res = nogo->get_game_status();
+            if (show) nogo->display();
             if ((this->n_count >> 1) >= n_round) this->temp = 1e-3;
         }
     }
     this->update_with_move(-1);
     if (show)
     {
-        if (0 != res[1]) std::printf("Game end. Winner is Player '%c'.\n", gomoku->get_symbol(res[1]));
+        if (0 != res[1]) std::printf("Game end. Winner is Player '%c'.\n", Nogo::get_symbol(res[1]));
         else std::cout << "Game end. Tie." << std::endl;
     }
     int i, z;

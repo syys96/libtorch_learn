@@ -28,7 +28,7 @@ public:
     void copy(const TreeNode &node, TreeNode *parent);
     uint32_t select(double c_puct, double virtual_loss);
     double get_value(double c_puct, uint32_t sum_N) const;
-    bool expand(const at::Tensor &prior, const std::vector<bool> &legal_action);
+    bool expand(const at::Tensor &prior, const std::vector<int> &legal_action);
     void backup(double value, double virtual_loss, bool success);
     inline bool is_leaf() const { return this->leaf; }
 
@@ -49,21 +49,21 @@ private:
     double P;
 };
 
-class MCTS : public Player
+class MCTS : public Playerm
 {
 public:
     MCTS(PolicyValueNet *network, uint32_t n_thread, double c_puct, double temp,
          uint32_t n_simulate, double virtual_loss, uint32_t action_dim, bool add_noise);
-    uint32_t get_action(Gomoku *gomoku, bool explore = false);
-    uint32_t get_action(std::vector<double> action_probs, bool explore = false);
-    std::vector<double> get_action_prob(Gomoku *gomoku);
-    inline void init() { this->is_self_play = false; }
-    void update_with_move(int last_move);
+    Loc get_action(Nogo *nogo, bool explore = false) override;
+    Loc get_action(std::vector<double> action_probs, bool explore = false);
+    std::vector<double> get_action_prob(Nogo *nogo);
+    inline void init() override { this->is_self_play = false; }
+    void update_with_move(int last_move) override;
     inline void set_temp(double temp = 1e-3) { this->temp = temp; }
-    int self_play(Gomoku *gomoku, std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values,
+    int self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values,
                   double temp = 1, uint32_t n_round = 20, bool add_noise = true, bool show = false);
 private:
-    void simulate(Gomoku * gomoku);
+    void simulate(Nogo * nogo);
     std::unique_ptr<TreeNode> root;
 #ifndef SINGLE_THREAD
     std::unique_ptr<ThreadPool> thread_pool;

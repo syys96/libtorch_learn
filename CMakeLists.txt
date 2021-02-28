@@ -41,6 +41,8 @@ set(CMAKE_PREFIX_PATH /Users/syys/Downloads/cpp_torch_app/libtorch)
 find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
+add_definitions(-DUSE_CUDA=0)
+
 add_executable(example-app main.cpp board.cpp core/global.cpp
         thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
         policy_value_net.cpp mcts.cpp)

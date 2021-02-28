@@ -15,8 +15,13 @@ void compare(uint32_t batch)
     std::vector<at::Tensor> pred = network.model->forward(x);
     clock_t e = clock();
     clock_t s1 = clock();
-//    x = x.to(torch::kCUDA);
-//    network.model->to(torch::kCUDA);
+    if (USE_CUDA) {
+        x = x.to(torch::kCUDA);
+        network.model->to(torch::kCUDA);
+    } else {
+        std::cout << "use cpu only" << std::endl;
+    }
+
     clock_t e1 = clock();
     std::vector<at::Tensor> pred1 = network.model->forward(x);
     clock_t e2 = clock();
