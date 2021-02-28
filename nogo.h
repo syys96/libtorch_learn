@@ -35,7 +35,7 @@ public:
     inline board_type get_board() const { return this->board; }
     inline Player get_current_color() const { return this->cur_color; }
     inline Size get_n() const { return this->n; }
-    inline uint32_t get_action_dim() const { return this->n*this->n; }
+    inline Size get_action_dim() const { return this->n*this->n; }
     void reset();
 
 private:

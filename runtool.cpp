@@ -6,8 +6,8 @@
 #include <ctime>
 #include "mcts.h"
 
-const char *model_path = "./model/model-checkpoint.pt";
-const char *best_path = "./model/model-best.pt";
+const char *model_path = "../model/model-checkpoint.pt";
+const char *best_path = "../model/model-best.pt";
 
 bool file_exists(const char * file)
 {
@@ -35,7 +35,7 @@ private:
 class Train
 {
 public:
-    Train(uint32_t size=8, uint32_t n_in_line=5, uint32_t state_c=5, uint32_t n_thread=6, double lr=4e-3, double c_lr=1, double temp=1, uint32_t n_simulate=400,
+    Train(uint32_t size=8, uint32_t state_c=2, uint32_t n_thread=6, double lr=4e-3, double c_lr=1, double temp=1, uint32_t n_simulate=400,
           uint32_t c_puct=5, double virtual_loss=3, uint32_t buffer_size=10000, uint32_t batch_size=256, uint32_t epochs=20, double kl_targ=0.02, uint32_t check_freq=50, uint32_t n_game=2000) :
             nogo(size), network(best_path, true, state_c, size, size*size), mcts(&network, n_thread, c_puct, temp, n_simulate, virtual_loss, size*size, true),
             state_c(state_c), n_thread(n_thread), c_puct(c_puct), virtual_loss(virtual_loss), temp(temp), n_simulate(n_simulate),

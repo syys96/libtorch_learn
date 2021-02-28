@@ -15,6 +15,10 @@ bool Nogo::has_legal_moves() {
 
 bool Nogo::execute_move(Nogo::move_type move) {
     if (!board.playMove(move, cur_color)) {
+        std::cout << "ERRORAAAAAAAA" << std::endl;
+        board.print_board(cur_color);
+        board.print_legal_dist(cur_color);
+        board.print_legal_dist(getOpp(cur_color));
         throw StringError("illegal move when execute move!");
         return false;
     }
@@ -49,6 +53,7 @@ at::Tensor Nogo::curr_state(bool to_device, torch::Device &device) {
     // 当前玩家视角
     Size size = this->n;
     std::vector<int> temp;
+    temp.resize(get_action_dim(), 0);
     this->board.get_color_NN(temp);
     at::Tensor s, boardm;
     if (to_device)
