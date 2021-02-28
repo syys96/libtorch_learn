@@ -50,7 +50,7 @@ public:
     void augment_data(std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values);
     void push(const at::Tensor &s, const at::Tensor &p, const at::Tensor &z);
     // 评估
-    double evaluate(const char *best_path, uint32_t num);
+    double evaluate(const char *best_path_local, uint32_t num);
     void run(const char *model_path_local, const char *best_path_local);
     std::vector<double> train_step(const std::vector<at::Tensor> &state, const std::vector<at::Tensor> &prob, const std::vector<at::Tensor> &value, const double &lr);
     std::vector<double> train_step(const at::Tensor &state, const at::Tensor &prob, const at::Tensor &value, const double &lr);
@@ -140,9 +140,9 @@ void Train::push(const at::Tensor &s, const at::Tensor &p, const at::Tensor &z)
     //this->values.emplace_back(z);
 }
 
-double Train::evaluate(const char *best_path, uint32_t num=20)
+double Train::evaluate(const char *best_path_local, uint32_t num=20)
 {
-    PolicyValueNet network_local(best_path, true, this->state_c,
+    PolicyValueNet network_local(best_path_local, true, this->state_c,
                                  this->nogo.get_n(), this->nogo.get_action_dim());
     MCTS mcts_train(&network_local, this->n_thread, this->c_puct, this->temp, this->n_simulate,
                     this->virtual_loss, this->nogo.get_action_dim(), true);
@@ -159,8 +159,8 @@ double Train::evaluate(const char *best_path, uint32_t num=20)
         swap = !swap;
     }
     double ratio = (count1 + (double)(num - count1 - count2) / 2) / num;
-    if (ratio > 0.55) this->network.save_model(best_path);
-    else this->network.load_model(best_path);
+    if (ratio > 0.55) this->network.save_model(best_path_local);
+    else this->network.load_model(best_path_local);
     return ratio;
 }
 
