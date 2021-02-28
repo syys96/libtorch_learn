@@ -418,6 +418,10 @@ bool Board::playMove(Loc x, Loc y, Player pla) {
         return true;
     }
     return false;
+
+
+
+
 }
 
 void Board::playMoveAssumeLegal(Loc x, Loc y, Player pla) {

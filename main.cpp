@@ -10,7 +10,7 @@ int main() {
 
 //    test_thread_pool();
     Board main_board(9, 9);
-    Player me = parase_botzone(main_board);
+    Player me = parase_jsonString(main_board);
     main_board.print_board(me);
     main_board.print_legal_dist(me);
     main_board.print_legal_dist(getOpp(me));
