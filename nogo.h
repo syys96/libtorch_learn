@@ -20,6 +20,8 @@ public:
     using move_type = Loc;
     using board_type = Board;
 
+    Nogo& operator=(const Nogo&) = default;
+
     explicit Nogo(Size n, Player first_color=P_BLACK);
 
     bool has_legal_moves();

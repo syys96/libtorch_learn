@@ -75,6 +75,8 @@ Board::Board(const Board &other) {
     colors = other.colors;
     black_legal_dist = other.black_legal_dist;
     white_legal_dist = other.white_legal_dist;
+    black_legal_moves = other.black_legal_moves;
+    white_legal_moves = other.white_legal_moves;
 
     memcpy(adj_offsets, other.adj_offsets, sizeof(Size)*8);
 }
@@ -496,6 +498,13 @@ Loc Location::Loc2LocNN(Loc loc, Size x_size)
     Loc locx = getX(loc, x_size);
     Loc locy = getY(loc, x_size);
     return getLocNN(locx, locy, x_size);
+}
+
+Loc Location::LocNN2Loc(Loc locNN, Size x_size)
+{
+    Loc xnn = getXNN(locNN, x_size);
+    Loc ynn = getYNN(locNN, x_size);
+    return getLoc(xnn, ynn, x_size);
 }
 
 void Location::getAdjacentOffsets(Size adj_offsets[8], Size x_size)

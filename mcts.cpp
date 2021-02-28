@@ -113,7 +113,7 @@ TreeNode::~TreeNode()
     }
 }
 
-uint32_t TreeNode::select(double c_puct, double virtual_loss)
+Loc TreeNode::select(double c_puct, double virtual_loss)
 {
     double best_value = -DBL_MAX, value;
     int best_act = -1;
@@ -375,7 +375,7 @@ void MCTS::simulate(Nogo *nogo)
         while (!node->leaf)
         {
             action = node->select(this->c_puct, this->virtual_loss);
-            game.execute_move(action);
+            game.execute_move(Location::LocNN2Loc(action, game.get_n()));
             node = node->children[action];
         }
         // 游戏是否结束
@@ -400,6 +400,8 @@ void MCTS::simulate(Nogo *nogo)
                 prior = 0.75 * prior + 0.25 * this->network->dirichlet_noise(game.get_action_dim(), 0.3);
             }
             success = node->expand(prior, legal_move);
+//            if (!success)
+//            std::cout << "模拟结果: " << success << ", count: " << count << std::endl;
         }
         else
         {
@@ -419,7 +421,7 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
                     double temp, uint32_t n_round, bool add_noise, bool show)
 {
     std::vector<int> res(2, 0);
-    uint32_t move;
+    Loc move;
     int idx;
     nogo->reset();
     // 起始温度参数
@@ -455,11 +457,11 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
         if (show)
         {
             Size xsize = nogo->get_n();
-            Loc locx = Location::getX(move, xsize);
-            Loc locy = Location::getY(move, xsize);
+            Loc locx = Location::getXNN(move, xsize);
+            Loc locy = Location::getYNN(move, xsize);
             std::printf("Player '%c' : %d %d\n", Nogo::get_symbol(idx), locx, locy);
         }
-        if (nogo->execute_move(move))
+        if (nogo->execute_move(Location::LocNN2Loc(move, nogo->get_n())))
         {
             this->update_with_move(move);
             states.emplace_back(state);

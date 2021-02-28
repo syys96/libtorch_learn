@@ -26,7 +26,7 @@ public:
     ~TreeNode();
     TreeNode &operator=(const TreeNode &node);
     void copy(const TreeNode &node, TreeNode *parent);
-    uint32_t select(double c_puct, double virtual_loss);
+    Loc select(double c_puct, double virtual_loss);
     double get_value(double c_puct, uint32_t sum_N) const;
     bool expand(const at::Tensor &prior, const std::vector<int> &legal_action);
     void backup(double value, double virtual_loss, bool success);
@@ -62,8 +62,8 @@ public:
     inline void set_temp(double temp = 1e-3) { this->temp = temp; }
     int self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values,
                   double temp = 1, uint32_t n_round = 20, bool add_noise = true, bool show = false);
-private:
     void simulate(Nogo * nogo);
+private:
     std::unique_ptr<TreeNode> root;
 #ifndef SINGLE_THREAD
     std::unique_ptr<ThreadPool> thread_pool;

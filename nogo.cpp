@@ -106,11 +106,13 @@ int Nogo::start_play(Playerm *player1, Playerm *player2, bool swap, bool show)
             std::printf("Player '%c' (example: 0 0):", this->get_symbol(players[idx]->get_player()));
         }
         move = players[idx]->get_action(this);
-        if (this->execute_move(move))
+        if (this->execute_move(Location::LocNN2Loc(move, n)))
         {
             if (show)
             {
-                std::printf("Player '%c' : %d %d\n", this->get_symbol(players[idx]->get_player()), move / this->get_n(), move % this->get_n());
+                Loc nnx = Location::getXNN(move, n);
+                Loc nny = Location::getYNN(move, n);
+                std::printf("Player '%c' : %d %d\n", this->get_symbol(players[idx]->get_player()), nnx, nny);
             }
             players[idx]->update_with_move(move);
             res = this->get_game_status();
@@ -128,4 +130,12 @@ int Nogo::start_play(Playerm *player1, Playerm *player2, bool swap, bool show)
     }
     return res[1];
 }
+
+//Nogo& Nogo::operator=(const Nogo &) {
+//    Nogo copy(n, cur_color);
+//    copy.board = board;
+//    copy.n = n;
+//    copy.cur_color = cur_color;
+//    return copy;
+//}
 

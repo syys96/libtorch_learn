@@ -39,6 +39,7 @@ namespace Location
     Loc getXNN(Loc loc, Size x_size);
     Loc getYNN(Loc loc, Size x_size);
     Loc Loc2LocNN(Loc loc, Size x_size);
+    Loc LocNN2Loc(Loc locNN, Size x_size);
 
     void getAdjacentOffsets(Size adj_offsets[8], Size x_size);
     bool isAdjacent(Loc loc0, Loc loc1, int x_size);
