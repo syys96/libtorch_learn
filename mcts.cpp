@@ -227,7 +227,7 @@ MCTS::MCTS(PolicyValueNet *network, uint32_t n_thread, double c_puct, double tem
     torch::set_num_threads(n_thread);
 }
 
-void MCTS::update_with_move(int last_move)
+void MCTS::update_with_move(Loc last_move)
 {
     TreeNode *root = this->root.get();
     if (this->is_self_play && last_move >= 0 && last_move < root->children.size() && root->children[last_move] != nullptr)

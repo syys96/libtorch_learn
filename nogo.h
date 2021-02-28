@@ -29,6 +29,7 @@ public:
     at::Tensor curr_state(bool to_device, torch::Device &device);
     void display() const;
     static char get_symbol(Player player);
+    int start_play(Playerm *player1, Playerm *player2, bool swap=false, bool show=false);
 
     inline Size get_action_size() const { return this->n * this->n; }
     inline board_type get_board() const { return this->board; }
@@ -50,9 +51,9 @@ public:
     inline ~Playerm() = default;
     inline void set_player(Player player) { this->player = player; }
     virtual void init() {}
-    virtual void update_with_move(int last_move) {}
+    virtual void update_with_move(Loc last_move) {}
     inline int get_player() const { return this->player; }
-    virtual Loc get_action(Nogo *nogo, bool explore) = 0;
+    virtual Loc get_action(Nogo *nogo, bool explore = false) = 0;
 private:
     Player player;
 };

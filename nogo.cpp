@@ -75,3 +75,52 @@ char Nogo::get_symbol(Player player) {
     else return '_';
 }
 
+int Nogo::start_play(Playerm *player1, Playerm *player2, bool swap, bool show)
+{
+    // 默认第一个参数为先手
+    if (nullptr == player1 || nullptr == player2) return 0;
+    Player idx = swap ? P_WHITE : P_BLACK;	// 交换先后手
+    player1->set_player(idx);
+    player1->init();
+    player2->set_player(getOpp(idx));
+    player2->init();
+    Playerm * players[2] = { player1,player2 };
+    idx = swap ? 1 : 0;
+    uint32_t move;
+    this->reset();
+    std::vector<int> res(2, 0);
+    if (show)
+    {
+        std::cout << "New game." << std::endl;
+        this->display();
+    }
+    while (0 == res[0])
+    {
+        if (show)
+        {
+            std::printf("Player '%c' (example: 0 0):", this->get_symbol(players[idx]->get_player()));
+        }
+        move = players[idx]->get_action(this);
+        if (this->execute_move(move))
+        {
+            if (show)
+            {
+                std::printf("Player '%c' : %d %d\n", this->get_symbol(players[idx]->get_player()), move / this->get_n(), move % this->get_n());
+            }
+            players[idx]->update_with_move(move);
+            res = this->get_game_status();
+            idx = 1 - idx;
+            if (show) this->display();
+        }
+    }
+    // 玩家重置
+    player1->update_with_move(-1);
+    player2->update_with_move(-1);
+    if (show)
+    {
+        if (0 != res[1]) std::printf("Game end. Winner is Player '%c'.\n", this->get_symbol(res[1]));
+        else std::cout << "Game end. Tie." << std::endl;
+    }
+    return res[1];
+}
+
