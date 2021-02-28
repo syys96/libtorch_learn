@@ -68,11 +68,11 @@ Board::Board(const Board &other) {
     x_size = other.x_size;
     y_size = other.y_size;
 
-    memcpy(colors, other.colors, sizeof(Color)*MAX_ARR_SIZE);
     memcpy(chain_data, other.chain_data, sizeof(ChainData)*MAX_ARR_SIZE);
     memcpy(chain_head, other.chain_head, sizeof(Loc)*MAX_ARR_SIZE);
     memcpy(next_in_chain, other.next_in_chain, sizeof(Loc)*MAX_ARR_SIZE);
 
+    colors = other.colors;
     black_legal_dist = other.black_legal_dist;
     white_legal_dist = other.white_legal_dist;
 
@@ -87,11 +87,13 @@ void Board::init(Size xS, Size yS)
     x_size = xS;
     y_size = yS;
 
-    std::fill(colors, colors+MAX_ARR_SIZE, C_WALL);
+//    std::fill(colors, colors+MAX_ARR_SIZE, C_WALL);
+    colors.resize(MAX_ARR_SIZE, C_WALL);
     white_legal_dist.resize(MAX_ARR_SIZE, false);
     black_legal_dist.resize(MAX_ARR_SIZE, false);
     std::fill(white_legal_dist.begin(), white_legal_dist.end(), false);
     std::fill(black_legal_dist.begin(), black_legal_dist.end(), false);
+    std::fill(colors.begin(), colors.end(), C_WALL);
 
     FOREACHONBOARD(
             colors[loc] = C_EMPTY;
@@ -298,7 +300,7 @@ Size Board::get_ysize() const {
 }
 
 void Board::reset() {
-    std::fill(colors, colors+MAX_ARR_SIZE, C_WALL);
+    std::fill(colors.begin(), colors.end(), C_WALL);
     std::fill(white_legal_dist.begin(), white_legal_dist.end(), false);
     std::fill(black_legal_dist.begin(), black_legal_dist.end(), false);
 
@@ -452,17 +454,26 @@ void Board::print_legal_dist(Player pla) const {
     std::cout << "---------------------" << std::endl;
 }
 
+void Board::get_color_NN(std::vector<int> &board_nn) const {
+    FOREACHONBOARD(
+            Loc locnn = Location::Loc2LocNN(loc, x_size);
+            board_nn[locnn] = (colors[loc] == C_BLACK ? NN_BLACK :
+                    (colors[loc] == C_WHITE ? NN_WHITE : NN_EMPTY)
+                    );
+            )
+}
+
 
 //LOCATION--------------------------------------------------------------------------------
 Loc Location::getLoc(Loc x, Loc y, Size x_size)
 {
     return (x+1) + (y+1)*(x_size+1);
 }
-Loc Location::getX(Loc loc, int x_size)
+Loc Location::getX(Loc loc, Size x_size)
 {
     return (loc % (x_size+1)) - 1;
 }
-Loc Location::getY(Loc loc, int x_size)
+Loc Location::getY(Loc loc, Size x_size)
 {
     return (loc / (x_size+1)) - 1;
 }
@@ -471,13 +482,20 @@ Loc Location::getLocNN(Loc x, Loc y, Size x_size)
 {
     return (x) + (y)*(x_size);
 }
-Loc Location::getXNN(Loc loc, int x_size)
+Loc Location::getXNN(Loc loc, Size x_size)
 {
     return (loc % (x_size));
 }
-Loc Location::getYNN(Loc loc, int x_size)
+Loc Location::getYNN(Loc loc, Size x_size)
 {
     return (loc / (x_size));
+}
+
+Loc Location::Loc2LocNN(Loc loc, Size x_size)
+{
+    Loc locx = getX(loc, x_size);
+    Loc locy = getY(loc, x_size);
+    return getLocNN(locx, locy, x_size);
 }
 
 void Location::getAdjacentOffsets(Size adj_offsets[8], Size x_size)

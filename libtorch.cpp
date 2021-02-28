@@ -39,34 +39,40 @@ std::future<NeuralNetwork::return_type> NeuralNetwork::commit(Nogo* nogo) {
     int n = nogo->get_n();
 
     // convert data format
-    auto board = nogo->get_board();
+//    auto board = nogo->get_board();
+//    std::vector<int> board0;
+//    for (unsigned int i = 0; i < n*n; i++) {
+//        board0.insert(board0.end(), board[i].begin(), board[i].end());
+//    }
+//    const std::vector<C>& board = nogo->get_board().get_color();
     std::vector<int> board0;
-    for (unsigned int i = 0; i < board.size(); i++) {
-        board0.insert(board0.end(), board[i].begin(), board[i].end());
-    }
+    board0.resize(n*n, 0);
+    nogo->get_board().get_color_NN(board0);
 
     torch::Tensor temp =
             torch::from_blob(&board0[0], {1, 1, n, n}, torch::dtype(torch::kInt32));
 
-    torch::Tensor state0 = temp.gt(0).toType(torch::kFloat32);
-    torch::Tensor state1 = temp.lt(0).toType(torch::kFloat32);
+    torch::Tensor state0 = temp.gt(0).toType(torch::kFloat32); // color = 1
+    torch::Tensor state1 = temp.lt(0).toType(torch::kFloat32); // color = -1
 
-    int last_move = gomoku->get_last_move();
-    int cur_player = gomoku->get_current_color();
+//    int last_move = gomoku->get_last_move();
+    int cur_player = nogo->get_current_color();
 
     if (cur_player == -1) {
         std::swap(state0, state1);
+        // state0: color = me;
+        // state1: color = opp;
     }
 
-    torch::Tensor state2 =
-            torch::zeros({1, 1, n, n}, torch::dtype(torch::kFloat32));
+//    torch::Tensor state2 =
+//            torch::zeros({1, 1, n, n}, torch::dtype(torch::kFloat32));
+//
+//    if (last_move != -1) {
+//        state2[0][0][last_move / n][last_move % n] = 1;
+//    }
 
-    if (last_move != -1) {
-        state2[0][0][last_move / n][last_move % n] = 1;
-    }
-
-    // torch::Tensor states = torch::cat({state0, state1}, 1);
-    torch::Tensor states = torch::cat({state0, state1, state2}, 1);
+    torch::Tensor states = torch::cat({state0, state1}, 1);
+//    torch::Tensor states = torch::cat({state0, state1, state2}, 1);
 
     // emplace task
     std::promise<return_type> promise;

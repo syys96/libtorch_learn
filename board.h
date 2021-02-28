@@ -33,11 +33,12 @@ typedef int16_t Num;
 namespace Location
 {
     Loc getLoc(Loc x, Loc y, Size x_size);
-    Loc getX(Loc loc, int x_size);
-    Loc getY(Loc loc, int x_size);
+    Loc getX(Loc loc, Size x_size);
+    Loc getY(Loc loc, Size x_size);
     Loc getLocNN(Loc x, Loc y, Size x_size);
-    Loc getXNN(Loc loc, int x_size);
-    Loc getYNN(Loc loc, int x_size);
+    Loc getXNN(Loc loc, Size x_size);
+    Loc getYNN(Loc loc, Size x_size);
+    Loc Loc2LocNN(Loc loc, Size x_size);
 
     void getAdjacentOffsets(Size adj_offsets[8], Size x_size);
     bool isAdjacent(Loc loc0, Loc loc1, int x_size);
@@ -63,6 +64,10 @@ namespace Location
 static constexpr Player P_BLACK = 1;
 static constexpr Player P_WHITE = 2;
 static constexpr Player P_NULL = 0;
+
+static constexpr int NN_BLACK = 1;
+static constexpr int NN_WHITE = -1;
+static constexpr int NN_EMPTY = 0;
 
 static constexpr Color C_EMPTY = 0;
 static constexpr Color C_BLACK = 1;
@@ -121,6 +126,8 @@ public:
     Num get_legal_move_dist(Player player, std::vector<int>& legal_dist);
     // print legal info
     void print_legal_dist(Player pla) const;
+    // return color info for nn
+    void get_color_NN(std::vector<int>& board_nn) const;
 private:
     //Structs---------------------------------------
 
@@ -136,7 +143,7 @@ private:
 
     Size x_size;                  //Horizontal size of board
     Size y_size;                  //Vertical size of board
-    Color colors[MAX_ARR_SIZE];  //Color of each location on the board.
+    std::vector<Color> colors;    //Color of each location on the board.
 
     // updated with each move
     std::vector<bool> black_legal_dist;

@@ -42,7 +42,8 @@ find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 add_executable(example-app main.cpp board.cpp core/global.cpp
-        thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp)
+        thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
+        policy_value_net.cpp mcts.cpp)
 target_link_libraries(example-app "${TORCH_LIBRARIES}")
 set_property(TARGET example-app PROPERTY CXX_STANDARD 14)
 
@@ -53,6 +54,11 @@ set_property(TARGET thread_pool_test PROPERTY CXX_STANDARD 14)
 add_executable(board_test tests/board_test.cpp board.cpp)
 target_link_libraries(board_test "${TORCH_LIBRARIES}" gtest_main)
 set_property(TARGET board_test PROPERTY CXX_STANDARD 14)
+enable_testing()
+
+add_executable(cpp_net_test tests/policy_value_net_test.cpp)
+target_link_libraries(cpp_net_test "${TORCH_LIBRARIES}" gtest_main)
+set_property(TARGET cpp_net_test PROPERTY CXX_STANDARD 14)
 enable_testing()
 
 set(CMAKE_CXX_STANDARD 14)
