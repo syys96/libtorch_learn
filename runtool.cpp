@@ -51,7 +51,7 @@ public:
     void push(const at::Tensor &s, const at::Tensor &p, const at::Tensor &z);
     // 评估
     double evaluate(const char *best_path, uint32_t num);
-    void run(const char *model_path, const char *best_path);
+    void run(const char *model_path_local, const char *best_path_local);
     std::vector<double> train_step(const std::vector<at::Tensor> &state, const std::vector<at::Tensor> &prob, const std::vector<at::Tensor> &value, const double &lr);
     std::vector<double> train_step(const at::Tensor &state, const at::Tensor &prob, const at::Tensor &value, const double &lr);
 private:
@@ -142,10 +142,10 @@ void Train::push(const at::Tensor &s, const at::Tensor &p, const at::Tensor &z)
 
 double Train::evaluate(const char *best_path, uint32_t num=20)
 {
-    PolicyValueNet network(best_path, true, this->state_c,
-            this->nogo.get_n(), this->nogo.get_action_dim());
-    MCTS mcts_train(&network, this->n_thread, this->c_puct, this->temp, this->n_simulate,
-            this->virtual_loss, this->nogo.get_action_dim(), true);
+    PolicyValueNet network_local(best_path, true, this->state_c,
+                                 this->nogo.get_n(), this->nogo.get_action_dim());
+    MCTS mcts_train(&network_local, this->n_thread, this->c_puct, this->temp, this->n_simulate,
+                    this->virtual_loss, this->nogo.get_action_dim(), true);
     this->mcts.set_temp(1e-3);
     mcts_train.set_temp(1e-3);
     int winner;
@@ -164,23 +164,23 @@ double Train::evaluate(const char *best_path, uint32_t num=20)
     return ratio;
 }
 
-void Train::run(const char *model_path, const char *best_path)
+void Train::run(const char *model_path_local, const char *best_path_local)
 {
     uint32_t i, j, k, size, idx;
-    if (!file_exists(best_path)) this->network.save_model(best_path);
+    if (!file_exists(best_path_local)) this->network.save_model(best_path_local);
     std::vector<double> res;
     double kl, best_ratio = 0, ratio;
     TimeCounter timer;
     for (i = 0; i < this->n_game; i++)
     {
         timer.start();
-        std::vector<at::Tensor> states, probs, values_;
-        std::vector<float> values;
-        mcts.self_play(&this->nogo, states, probs, values, this->temp, 20, true, false);
-        this->augment_data(states, probs, values);
+        std::vector<at::Tensor> states_local, probs_local, values_;
+        std::vector<float> values_local;
+        mcts.self_play(&this->nogo, states_local, probs_local, values_local, this->temp, 20, true, false);
+        this->augment_data(states_local, probs_local, values_local);
         size = this->states.size(0);
-        std::printf("game %4d/%d : duration=%.3fs  episode=%d  buffer=%d\n", i, this->n_game, timer.end_s(), states.size(), size);
-        states.clear(); probs.clear(); values.clear(); values_.clear();
+        std::printf("game %4d/%d : duration=%.3fs  episode=%lu  buffer=%d\n", i, this->n_game, timer.end_s(), states_local.size(), size);
+        states_local.clear(); probs_local.clear(); values_local.clear(); values_.clear();
         if (size < this->batch_size) continue;
         //for (k = 0; k < size; k++)
         //{
@@ -202,7 +202,7 @@ void Train::run(const char *model_path, const char *best_path)
                     // 补齐batch
                     index1 = torch::cat({ index1,index.slice(0, 0, k + this->batch_size - size) }, 0);
                 }
-                res = this->train_step(this->states.index(index1), this->probs.index(index1).reshape({index1.size(0),this->gomoku.get_action_dim()}),
+                res = this->train_step(this->states.index(index1), this->probs.index(index1).reshape({index1.size(0),this->nogo.get_action_dim()}),
                                        this->values.index(index1), this->lr * this->c_lr);
                 kl = res[2];
                 std::printf("train %3d/%d : cross_entropy_loss=%.8f  mse_loss=%.8f  kl=%.8f  R2_old=%.8f  R2_new=%.8f  c_lr=%.5f  duration=%.3fs\n",
@@ -225,11 +225,11 @@ void Train::run(const char *model_path, const char *best_path)
             //std::printf("train %3d/%d : cross_entropy_loss=%.8f  mse_loss=%.8f  kl=%.8f  R2_old=%.8f  R2_new=%.8f  c_lr=%.5f  duration=%.3fs\n",
             //		j, this->epochs, res[0], res[1], kl, res[3], res[4], this->c_lr, timer.end_s());
         }
-        this->network.save_model(model_path);
+        this->network.save_model(model_path_local);
         if ((i + 1) % this->check_freq == 0)
         {
             timer.start();
-            ratio = this->evaluate(best_path);
+            ratio = this->evaluate(best_path_local);
             if (ratio > best_ratio) best_ratio = ratio;
             std::printf("evaluate : ratio=%.8f  best_ratio=%.8f  duration=%.3fs\n", ratio, best_ratio, timer.end_s());
         }
