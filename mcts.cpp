@@ -235,7 +235,7 @@ void MCTS::update_with_move(Loc last_move)
     // 搞不懂
     // 去掉可以，但一定要保证mcts的update和nogo的execmove时刻对应
     // 这个代码mcts和nogo是分开的，mcts树里面没有任何action和state的信息，真是服了
-    if (this->is_self_play && last_move >= 0 && last_move < root_local->children.size() && root_local->children[last_move] != nullptr)
+    if (last_move >= 0 && last_move < root_local->children.size() && root_local->children[last_move] != nullptr)
     {
         // 利用子树 孩子节点作为根节点
         TreeNode *node = root_local->children[last_move];
