@@ -20,6 +20,8 @@ TEST(test_torch_tensor, test_torch_tensor_test_reshape)
     auto tensorm = torch::tensor(board_map).toType(torch::kInt).reshape({ size,size }).transpose(0, 1);
     Loc xNN = Location::getXNN(locNN, size);
     Loc yNN = Location::getYNN(locNN, size);
+    ASSERT_EQ(x, xNN);
+    ASSERT_EQ(y, yNN);
 
     std::cout << tensorm[xNN][yNN] << std::endl;
     std::cout << tensorm[yNN][xNN] << std::endl;
