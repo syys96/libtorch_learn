@@ -12,7 +12,7 @@ int main()
     const char *model_path = "../model/model-checkpoint.pt";
     const char *best_path = "../model/model-best.pt";
     Size size=9; uint32_t state_c=2; uint32_t n_thread=1; double lr=4e-3; double c_lr=1;
-    double temp=1; uint32_t n_simulate=50;
+    double temp=1; uint32_t n_simulate=5;
     uint32_t c_puct=5; double virtual_loss=3;
     Nogo nogo(size);
     PolicyValueNet network(best_path, true, state_c, size, size*size);
@@ -22,7 +22,7 @@ int main()
     std::vector<float> values_local;
     uint32_t n_round = 20;
     bool add_noise = true;
-    bool show = false;
+    bool show = true;
 
 //    mcts.simulate(&nogo);
 
