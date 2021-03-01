@@ -221,7 +221,6 @@ MCTS::MCTS(PolicyValueNet *network, uint32_t n_thread, double c_puct, double tem
         add_noise(add_noise),
         action_dim(action_dim),
         n_count(0),
-        is_self_play(false),
         root(new TreeNode(nullptr, 1., action_dim))
 {
     srand(time(nullptr));
@@ -431,11 +430,10 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
 
     //通通初始化
     nogo->reset();
-    this->set_gamemode(true);
     this->clear_tree();
     this->set_temp(temp); // 起始温度参数
     this->add_noise = add_noise;
-    if (this->n_count != 0 || this->temp != temp || !this->is_self_play) {
+    if (this->n_count != 0 || this->temp != temp) {
         throw std::runtime_error("self play not inited");
     }
 
