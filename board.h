@@ -41,7 +41,7 @@ namespace Location
     Loc Loc2LocNN(Loc loc, Size x_size);
     Loc LocNN2Loc(Loc locNN, Size x_size);
 
-    void getAdjacentOffsets(Size adj_offsets[8], Size x_size);
+    void getAdjacentOffsets(std::vector<Size>& adj_offsets, Size x_size);
     bool isAdjacent(Loc loc0, Loc loc1, int x_size);
     Loc getMirrorLoc(Loc loc, int x_size, int y_size);
     Loc getCenterLoc(int x_size, int y_size);
@@ -92,6 +92,7 @@ public:
     Board(const Board& other);
 
     Board& operator=(const Board&) = default;
+    bool operator==(const Board& other) const;
 
     //Check if moving here would be a self-capture
     bool isSuicide(Loc loc, Player pla) const;
@@ -138,6 +139,9 @@ private:
         short num_locs;      //Number of stones in chain
         short num_liberties; //Number of liberties in chain
         ChainData() {owner = C_EMPTY; num_locs = 0; num_liberties = 0;}
+        bool operator==(const ChainData& other) const { return owner==other.owner
+                                                && num_locs== other.num_locs
+                                                && num_liberties==other.num_liberties;}
     };
 
     //Data--------------------------------------------
@@ -153,11 +157,16 @@ private:
     Num white_legal_moves;
 
     //Every chain of stones has one of its stones arbitrarily designated as the head.
-    ChainData chain_data[MAX_ARR_SIZE]; //For each head stone, the chaindata for the chain under that head. Undefined otherwise.
-    Loc chain_head[MAX_ARR_SIZE];       //Where is the head of this chain? Undefined if EMPTY or WALL
-    Loc next_in_chain[MAX_ARR_SIZE];    //Location of next stone in chain. Circular linked list. Undefined if EMPTY or WALL
+    std::vector<ChainData> chain_data; //For each head stone, the chaindata for the chain under that head. Undefined otherwise.
+    std::vector<Loc> chain_head;       //Where is the head of this chain? Undefined if EMPTY or WALL
+    std::vector<Loc> next_in_chain;    //Location of next stone in chain. Circular linked list. Undefined if EMPTY or WALL
 
-    Size adj_offsets[8]; //Indices 0-3: Offsets to add for adjacent points. Indices 4-7: Offsets for diagonal points. 2 and 3 are +x and +y.
+//    ChainData chain_data[MAX_ARR_SIZE];
+//    Loc chain_head[MAX_ARR_SIZE];
+//    Loc next_in_chain[MAX_ARR_SIZE];
+
+//    Size adj_offsets[8];
+    std::vector<Size> adj_offsets;    //Indices 0-3: Offsets to add for adjacent points. Indices 4-7: Offsets for diagonal points. 2 and 3 are +x and +y.
 
     void mergeChains(Loc loc1, Loc loc2);
     bool isLibertyOf(Loc loc, Loc head) const;

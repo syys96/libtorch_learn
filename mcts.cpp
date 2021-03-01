@@ -223,7 +223,7 @@ MCTS::MCTS(PolicyValueNet *network, uint32_t n_thread, double c_puct, double tem
         is_self_play(false),
         root(new TreeNode(nullptr, 1., action_dim))
 {
-    srand(time(0));
+    srand(time(nullptr));
     torch::set_num_threads(n_thread);
 }
 

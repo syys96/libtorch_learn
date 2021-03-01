@@ -68,9 +68,12 @@ Board::Board(const Board &other) {
     x_size = other.x_size;
     y_size = other.y_size;
 
-    memcpy(chain_data, other.chain_data, sizeof(ChainData)*MAX_ARR_SIZE);
-    memcpy(chain_head, other.chain_head, sizeof(Loc)*MAX_ARR_SIZE);
-    memcpy(next_in_chain, other.next_in_chain, sizeof(Loc)*MAX_ARR_SIZE);
+//    memcpy(chain_data, other.chain_data, sizeof(ChainData)*MAX_ARR_SIZE);
+//    memcpy(chain_head, other.chain_head, sizeof(Loc)*MAX_ARR_SIZE);
+//    memcpy(next_in_chain, other.next_in_chain, sizeof(Loc)*MAX_ARR_SIZE);
+    chain_data = other.chain_data;
+    chain_head = other.chain_head;
+    next_in_chain = other.next_in_chain;
 
     colors = other.colors;
     black_legal_dist = other.black_legal_dist;
@@ -78,7 +81,8 @@ Board::Board(const Board &other) {
     black_legal_moves = other.black_legal_moves;
     white_legal_moves = other.white_legal_moves;
 
-    memcpy(adj_offsets, other.adj_offsets, sizeof(Size)*8);
+    adj_offsets = other.adj_offsets;
+//    memcpy(adj_offsets, other.adj_offsets, sizeof(Size)*8);
 }
 
 void Board::init(Size xS, Size yS)
@@ -106,10 +110,14 @@ void Board::init(Size xS, Size yS)
     black_legal_moves = xS * yS;
     white_legal_moves = xS * yS;
 
-    std::fill(chain_head, chain_head+MAX_ARR_SIZE, C_EMPTY);
-    std::fill(next_in_chain, next_in_chain+MAX_ARR_SIZE, C_EMPTY);
-    std::fill(chain_data, chain_data+MAX_ARR_SIZE, ChainData());
+    chain_head.resize(MAX_ARR_SIZE, C_EMPTY);
+    next_in_chain.resize(MAX_ARR_SIZE, C_EMPTY);
+    chain_data.resize(MAX_ARR_SIZE, ChainData());
+    std::fill(chain_head.begin(), chain_head.end(), C_EMPTY);
+    std::fill(next_in_chain.begin(), next_in_chain.end(), C_EMPTY);
+    std::fill(chain_data.begin(), chain_data.end(), ChainData());
 
+    adj_offsets.resize(8, 0);
     Location::getAdjacentOffsets(adj_offsets,x_size);
 }
 
@@ -315,9 +323,9 @@ void Board::reset() {
     black_legal_moves = x_size * y_size;
     white_legal_moves = x_size * y_size;
 
-    std::fill(chain_head, chain_head+MAX_ARR_SIZE, C_EMPTY);
-    std::fill(next_in_chain, next_in_chain+MAX_ARR_SIZE, C_EMPTY);
-    std::fill(chain_data, chain_data+MAX_ARR_SIZE, ChainData());
+    std::fill(chain_head.begin(), chain_head.end(), C_EMPTY);
+    std::fill(next_in_chain.begin(), next_in_chain.end(), C_EMPTY);
+    std::fill(chain_data.begin(), chain_data.end(), ChainData());
 }
 
 void Board::update_blank_legality(const std::vector<Loc> &locs) {
@@ -465,6 +473,22 @@ void Board::get_color_NN(std::vector<int> &board_nn) const {
             )
 }
 
+bool Board::operator==(const Board &other) const {
+    if (x_size != other.x_size || y_size != other.y_size)
+        return false;
+    if (colors != other.colors)
+        return false;
+    if (black_legal_dist != other.black_legal_dist || white_legal_dist != other.white_legal_dist)
+        return false;
+    if (black_legal_moves != other.black_legal_moves || white_legal_moves != other.white_legal_moves)
+        return false;
+    if (chain_data != other.chain_data || chain_head != other.chain_head || next_in_chain != other.next_in_chain)
+        return false;
+    if (adj_offsets != other.adj_offsets)
+        return false;
+    return true;
+}
+
 
 //LOCATION--------------------------------------------------------------------------------
 Loc Location::getLoc(Loc x, Loc y, Size x_size)
@@ -507,7 +531,7 @@ Loc Location::LocNN2Loc(Loc locNN, Size x_size)
     return getLoc(xnn, ynn, x_size);
 }
 
-void Location::getAdjacentOffsets(Size adj_offsets[8], Size x_size)
+void Location::getAdjacentOffsets(std::vector<Size>& adj_offsets, Size x_size)
 {
     adj_offsets[0] = -(x_size+1);
     adj_offsets[1] = -1;
