@@ -120,7 +120,11 @@ int Nogo::start_play(Playerm *player1, Playerm *player2, bool swap, bool show)
                 Loc nny = Location::getYNN(move, n);
                 std::printf("Player '%c' : %d %d\n", this->get_symbol(players[idx]->get_player()), nnx, nny);
             }
+            // 你如何确定这两个player的root节点对应的board是同步的？
+            // 在只有一个player执行update的情况下？
             players[idx]->update_with_move(move);
+            players[1-idx]->update_with_move(move);
+
             res = this->get_game_status();
             idx = 1 - idx;
             if (show) this->display();

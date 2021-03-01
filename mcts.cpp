@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <cfloat>
+#include <memory>
 #include <numeric>
 #include <iostream>
 #include <ctime>
@@ -229,16 +230,20 @@ MCTS::MCTS(PolicyValueNet *network, uint32_t n_thread, double c_puct, double tem
 
 void MCTS::update_with_move(Loc last_move)
 {
-    TreeNode *root = this->root.get();
-    if (this->is_self_play && last_move >= 0 && last_move < root->children.size() && root->children[last_move] != nullptr)
+    TreeNode *root_local = this->root.get();
+    // 为什么你一定要在selfplay时才利用这个特性呢？
+    // 搞不懂
+    // 去掉可以，但一定要保证mcts的update和nogo的execmove时刻对应
+    // 这个代码mcts和nogo是分开的，mcts树里面没有任何action和state的信息，真是服了
+    if (this->is_self_play && last_move >= 0 && last_move < root_local->children.size() && root_local->children[last_move] != nullptr)
     {
         // 利用子树 孩子节点作为根节点
-        TreeNode *node = root->children[last_move];
-        root->children[last_move] = nullptr;
+        TreeNode *node = root_local->children[last_move];
+        root_local->children[last_move] = nullptr;
         node->parent = nullptr;
         this->root.reset(node);
     }
-    else this->root.reset(new TreeNode(nullptr, 1., this->action_dim));
+    else this->root = std::make_unique<TreeNode>(nullptr, 1., this->action_dim);
     this->n_count++;
 }
 
@@ -423,11 +428,17 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
     std::vector<int> res(2, 0);
     Loc move;
     Player idx;
+
+    //通通初始化
     nogo->reset();
-    // 起始温度参数
-    this->temp = temp;
+    this->set_gamemode(true);
+    this->clear_tree();
+    this->set_temp(temp); // 起始温度参数
     this->add_noise = add_noise;
-    this->is_self_play = true;
+    if (this->n_count != 0 || this->temp != temp || !this->is_self_play) {
+        throw std::runtime_error("self play not inited");
+    }
+
     if (show)
     {
         std::cout << "New game." << std::endl;
@@ -486,3 +497,10 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
     }
     return res[1];
 }
+
+void MCTS::clear_tree() {
+    n_count = 0;
+    this->root = std::make_unique<TreeNode>(nullptr, 1., this->action_dim);
+}
+
+

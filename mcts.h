@@ -63,6 +63,8 @@ public:
     int self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values,
                   double temp = 1, uint32_t n_round = 20, bool add_noise = true, bool show = false);
     void simulate(Nogo * nogo);
+    void set_gamemode(bool isselfplay) {is_self_play = isselfplay;}
+    void clear_tree();
 private:
     std::unique_ptr<TreeNode> root;
 #ifndef SINGLE_THREAD
