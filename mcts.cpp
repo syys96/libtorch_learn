@@ -483,7 +483,10 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
             if ((this->n_count >> 1) >= n_round) this->temp = 1e-3;
         }
     }
-    this->update_with_move(-1);
+
+    this->clear_tree();
+    nogo->reset();
+
     if (show)
     {
         if (0 != res[1]) std::printf("Game end. Winner is Player '%c'.\n", Nogo::get_symbol(res[1]));

@@ -95,7 +95,6 @@ int Nogo::start_play(Playerm *player1, Playerm *player2, bool swap, bool show)
         throw std::runtime_error("play not inited correctly!");
     }
     Loc move;
-    this->reset();
     if (cur_color != P_BLACK) {
         throw std::runtime_error("init color is not black in eval!");
     }

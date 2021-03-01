@@ -57,7 +57,7 @@ public:
     Loc get_action(Nogo *nogo, bool explore = false) override;
     Loc get_action(std::vector<double> action_probs, bool explore = false);
     std::vector<double> get_action_prob(Nogo *nogo);
-    inline void init() override { this->is_self_play = false; }
+    inline void init() override { ; }
     void update_with_move(Loc last_move) override;
     inline void set_temp(double temp = 1e-3) { this->temp = temp; }
     int self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values,
