@@ -70,6 +70,11 @@ add_executable(thread_pool_test tests/thread_pool_test.cpp)
 target_link_libraries(thread_pool_test "${TORCH_LIBRARIES}")
 set_property(TARGET thread_pool_test PROPERTY CXX_STANDARD 14)
 
+add_executable(torch_reshae_test tests/test_torch_reshape.cpp board.cpp)
+target_link_libraries(torch_reshae_test "${TORCH_LIBRARIES}" gtest_main)
+set_property(TARGET torch_reshae_test PROPERTY CXX_STANDARD 14)
+enable_testing()
+
 add_executable(board_test tests/board_test.cpp board.cpp)
 target_link_libraries(board_test "${TORCH_LIBRARIES}" gtest_main)
 set_property(TARGET board_test PROPERTY CXX_STANDARD 14)

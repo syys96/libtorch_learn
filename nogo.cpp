@@ -58,12 +58,12 @@ at::Tensor Nogo::curr_state(bool to_device, torch::Device &device) {
     at::Tensor s, boardm;
     if (to_device)
     {
-        boardm = torch::tensor(temp, device).toType(torch::kInt).reshape({ size,size });
+        boardm = torch::tensor(temp, device).toType(torch::kInt).reshape({ size,size }).transpose(0, 1);
         s = torch::zeros({ 1,2,size,size }, device).toType(torch::kFloat);
     }
     else
     {
-        boardm = torch::tensor(temp, torch::kInt).reshape({ size,size });
+        boardm = torch::tensor(temp, torch::kInt).reshape({ size,size }).transpose(0, 1);
         s = torch::zeros({ 1,2,size,size }, torch::kFloat);
     }
     Player a = this->get_current_color();
