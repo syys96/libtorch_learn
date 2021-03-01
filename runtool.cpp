@@ -153,9 +153,22 @@ double Train::evaluate(const char *best_path_local, uint32_t num=20)
     uint32_t i, count1 = 0, count2 = 0;
     for (i = 0; i < num; i++)
     {
+        // 原作者这里的代码有问题吧，player1不一定play的是black，swap时就play的是white啊
         winner = this->nogo.start_play(&this->mcts, &mcts_train, swap, false);
-        if (winner == 1) count1 += 1;
-        else if (winner == -1) count2 += 1;
+        if (winner == P_BLACK) {
+            if (swap) {
+                count2++;
+            } else {
+                count1++;
+            }
+        }
+        else if (winner == P_WHITE) {
+            if (swap) {
+                count1++;
+            } else {
+                count2++;
+            }
+        }
         swap = !swap;
     }
     double ratio = (count1 + (double)(num - count1 - count2) / 2) / num;

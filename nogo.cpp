@@ -82,7 +82,7 @@ char Nogo::get_symbol(Player player) {
 
 int Nogo::start_play(Playerm *player1, Playerm *player2, bool swap, bool show)
 {
-    // 默认第一个参数为先手
+    // 默认第一个参数为先手(Black)
     if (nullptr == player1 || nullptr == player2) return 0;
     Player idx = swap ? P_WHITE : P_BLACK;	// 交换先后手
     player1->set_player(idx);
@@ -90,9 +90,15 @@ int Nogo::start_play(Playerm *player1, Playerm *player2, bool swap, bool show)
     player2->set_player(getOpp(idx));
     player2->init();
     Playerm * players[2] = { player1,player2 };
-    idx = swap ? 1 : 0;
-    uint32_t move;
+    idx = swap ? 1 : 0; // 总是黑方先下，区别在于是player1还是player2下黑子
+    if (players[idx]->get_player() != P_BLACK) {
+        throw std::runtime_error("play not inited correctly!");
+    }
+    Loc move;
     this->reset();
+    if (cur_color != P_BLACK) {
+        throw std::runtime_error("init color is not black in eval!");
+    }
     std::vector<int> res(2, 0);
     if (show)
     {
