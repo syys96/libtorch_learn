@@ -422,7 +422,7 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
 {
     std::vector<int> res(2, 0);
     Loc move;
-    int idx;
+    Player idx;
     nogo->reset();
     // 起始温度参数
     this->temp = temp;
