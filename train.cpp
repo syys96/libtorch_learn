@@ -76,7 +76,7 @@ void Train::push(const at::Tensor &s, const at::Tensor &p, const at::Tensor &z)
     //this->values.emplace_back(z);
 }
 
-double Train::evaluate(const char *best_path_local, uint32_t num=20)
+double Train::evaluate(const char *best_path_local, uint32_t num=50)
 {
     PolicyValueNet network_local(best_path_local, true, this->state_c,
                                  this->nogo.get_n(), this->nogo.get_action_dim());
