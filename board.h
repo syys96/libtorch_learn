@@ -9,7 +9,7 @@
 #include "core/global.h"
 
 #ifndef COMPILE_MAX_BOARD_LEN
-#define COMPILE_MAX_BOARD_LEN static_cast<Size>(9)
+#define COMPILE_MAX_BOARD_LEN static_cast<Size>(5)
 #endif
 
 struct Board;

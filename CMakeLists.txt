@@ -55,7 +55,7 @@ target_link_libraries(self_play_test "${TORCH_LIBRARIES}")
 set_property(TARGET self_play_test PROPERTY CXX_STANDARD 14)
 
 add_executable(copy_board_test tests/copy_board_test.cpp board.cpp core/global.cpp
-        thread_pool.cpp nogo.cpp libtorch.cpp policy_value_net.cpp mcts.cpp)
+        thread_pool.cpp nogo.cpp)
 target_link_libraries(copy_board_test "${TORCH_LIBRARIES}" gtest_main)
 set_property(TARGET copy_board_test PROPERTY CXX_STANDARD 14)
 enable_testing()
