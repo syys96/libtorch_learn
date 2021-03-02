@@ -12,6 +12,5 @@ int main()
 {
     Train train;
     train.evaluate(best_path, 50);
-    train.run(model_path, best_path);
     return 0;
 }

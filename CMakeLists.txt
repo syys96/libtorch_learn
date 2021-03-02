@@ -60,7 +60,7 @@ target_link_libraries(copy_board_test "${TORCH_LIBRARIES}" gtest_main)
 set_property(TARGET copy_board_test PROPERTY CXX_STANDARD 14)
 enable_testing()
 
-add_executable(runtool runtool.cpp board.cpp core/global.cpp
+add_executable(runtool runtool.cpp train.cpp board.cpp core/global.cpp
         thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
         policy_value_net.cpp mcts.cpp)
 target_link_libraries(runtool "${TORCH_LIBRARIES}")
