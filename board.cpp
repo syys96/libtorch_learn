@@ -87,8 +87,11 @@ Board::Board(const Board &other) {
 
 void Board::init(Size xS, Size yS)
 {
-    if(xS < 0 || yS < 0 || xS > MAX_LEN || yS > MAX_LEN)
+    if(xS < 0 || yS < 0 || xS > MAX_LEN || yS > MAX_LEN) {
+        std::cout << xS << ", " << MAX_LEN << std::endl;
         throw StringError("Board::init - invalid board size");
+    }
+
 
     x_size = xS;
     y_size = yS;

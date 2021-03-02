@@ -136,7 +136,9 @@ void Train::run(const char *model_path_local, const char *best_path_local)
         timer.start();
         std::vector<at::Tensor> states_local, probs_local, values_;
         std::vector<float> values_local;
-        mcts.self_play(&this->nogo, states_local, probs_local, values_local, this->temp, 10, true, true);
+        mcts.self_play(&this->nogo, states_local, probs_local, values_local, this->temp,
+                COMPILE_MAX_BOARD_LEN*COMPILE_MAX_BOARD_LEN/8,
+                true, true);
         this->augment_data(states_local, probs_local, values_local);
         size = this->states.size(0);
         std::printf("game %4d/%d : duration=%.3fs  episode=%lu  buffer=%d\n", i, this->n_game, timer.end_s(), states_local.size(), size);
