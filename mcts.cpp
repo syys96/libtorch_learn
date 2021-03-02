@@ -430,7 +430,7 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
 
     //通通初始化
     nogo->reset();
-    this->clear_tree();
+    this->reset();
     this->set_temp(temp); // 起始温度参数
     this->add_noise = add_noise;
     if (this->n_count != 0 || this->temp != temp) {
@@ -482,7 +482,7 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
         }
     }
 
-    this->clear_tree();
+    this->reset();
     nogo->reset();
 
     if (show)
@@ -500,8 +500,12 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
 }
 
 void MCTS::clear_tree() {
-    n_count = 0;
     this->root = std::make_unique<TreeNode>(nullptr, 1., this->action_dim);
+}
+
+void MCTS::reset() {
+    clear_tree();
+    n_count = 0;
 }
 
 

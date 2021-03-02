@@ -148,8 +148,6 @@ double Train::evaluate(const char *best_path_local, uint32_t num=20)
                     this->virtual_loss, this->nogo.get_action_dim(), true);
     this->mcts.set_temp(1e-3);
     mcts_train.set_temp(1e-3);
-    this->mcts.set_gamemode(false);
-    mcts_train.set_gamemode(false);
 
     int winner;
     bool swap = false;
@@ -157,8 +155,8 @@ double Train::evaluate(const char *best_path_local, uint32_t num=20)
     for (i = 0; i < num; i++)
     {
         // 原作者这里的代码有问题吧，player1不一定play的是black，swap时就play的是white啊
-        this->mcts.clear_tree();
-        mcts_train.clear_tree();
+        this->mcts.reset();
+        mcts_train.reset();
         this->nogo.reset();
         winner = this->nogo.start_play(&this->mcts, &mcts_train, swap, false);
         if (winner == P_BLACK) {

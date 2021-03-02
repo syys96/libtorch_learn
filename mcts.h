@@ -57,13 +57,14 @@ public:
     Loc get_action(Nogo *nogo, bool explore = false) override;
     Loc get_action(std::vector<double> action_probs, bool explore = false);
     std::vector<double> get_action_prob(Nogo *nogo);
-    inline void init() override { ; }
+    inline void init() override { reset(); }
     void update_with_move(Loc last_move) override;
     inline void set_temp(double temp = 1e-3) { this->temp = temp; }
     int self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values,
                   double temp = 1, uint32_t n_round = 20, bool add_noise = true, bool show = false);
     void simulate(Nogo * nogo);
     void clear_tree();
+    void reset();
 private:
     std::unique_ptr<TreeNode> root;
 #ifndef SINGLE_THREAD
