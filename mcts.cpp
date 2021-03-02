@@ -416,9 +416,9 @@ void MCTS::simulate(Nogo *nogo)
         }
         // 当前状态的前一步动作为对手方落子，价值取反
         if (node != root) node->backup(-value, this->virtual_loss, success);
-        if ((++count) > 1) std::printf("simulation count : %d\n", count);
+//        if ((++count) > 1) std::printf("simulation count : %d\n", count);
     }
-    //std::printf("simulation : %d\n", clock() - ts);
+//    std::printf("simulation : %d\n", clock() - ts);
 }
 
 int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at::Tensor> &probs, std::vector<float> &values,

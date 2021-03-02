@@ -178,10 +178,17 @@ double Train::evaluate(const char *best_path_local, uint32_t num=20)
             }
         }
         swap = !swap;
+        std::cout << "p1 vs p2: " << count1 << ", " << count2 << std::endl;
     }
     double ratio = (count1 + (double)(num - count1 - count2) / 2) / num;
-    if (ratio > 0.55) this->network.save_model(best_path_local);
-    else this->network.load_model(best_path_local);
+    if (ratio > 0.55) {
+        std::cout << "eval passed!" << std::endl;
+        this->network.save_model(best_path_local);
+    }
+    else {
+        std::cout << "eval faild, net back to best checkpoint" << std::endl;
+        this->network.load_model(best_path_local);
+    }
     return ratio;
 }
 
