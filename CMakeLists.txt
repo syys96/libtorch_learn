@@ -66,6 +66,12 @@ add_executable(runtool runtool.cpp board.cpp core/global.cpp
 target_link_libraries(runtool "${TORCH_LIBRARIES}")
 set_property(TARGET runtool PROPERTY CXX_STANDARD 14)
 
+add_executable(test_eval tests/test_eval.cpp board.cpp core/global.cpp
+        thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
+        policy_value_net.cpp mcts.cpp)
+target_link_libraries(test_eval "${TORCH_LIBRARIES}")
+set_property(TARGET test_eval PROPERTY CXX_STANDARD 14)
+
 add_executable(thread_pool_test tests/thread_pool_test.cpp)
 target_link_libraries(thread_pool_test "${TORCH_LIBRARIES}")
 set_property(TARGET thread_pool_test PROPERTY CXX_STANDARD 14)
