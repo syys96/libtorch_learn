@@ -232,7 +232,7 @@ void MCTS::update_with_move(Loc last_move)
     TreeNode *root_local = this->root.get();
     // 为什么你一定要在selfplay时才利用这个特性呢？
     // 搞不懂
-    // 去掉可以，但一定要保证mcts的update和nogo的execmove时刻对应
+    // selfplay==true的条件去掉可以，但一定要保证mcts的update和nogo的execmove时刻对应
     // 这个代码mcts和nogo是分开的，mcts树里面没有任何action和state的信息，真是服了
     if (last_move >= 0 && last_move < root_local->children.size() && root_local->children[last_move] != nullptr)
     {
