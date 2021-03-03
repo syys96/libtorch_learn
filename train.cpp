@@ -94,7 +94,7 @@ double Train::evaluate(const char *best_path_local, uint32_t num=50)
         this->mcts.reset();
         mcts_train.reset();
         this->nogo.reset();
-        winner = this->nogo.start_play(&this->mcts, &mcts_train, swap, true);
+        winner = this->nogo.start_play(&this->mcts, &mcts_train, swap, eval_show);
         if (winner == P_BLACK) {
             if (swap) {
                 count2++;
@@ -138,7 +138,7 @@ void Train::run(const char *model_path_local, const char *best_path_local)
         std::vector<float> values_local;
         mcts.self_play(&this->nogo, states_local, probs_local, values_local, this->temp,
                 COMPILE_MAX_BOARD_LEN*COMPILE_MAX_BOARD_LEN/8,
-                true, true);
+                true, self_play_show);
         this->augment_data(states_local, probs_local, values_local);
         size = this->states.size(0);
         std::printf("game %4d/%d : duration=%.3fs  episode=%lu  buffer=%d\n", i, this->n_game, timer.end_s(), states_local.size(), size);

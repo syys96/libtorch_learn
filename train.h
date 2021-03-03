@@ -11,6 +11,8 @@
 
 static const char *model_path = "../model/model-checkpoint.pt";
 static const char *best_path = "../model/model-best.pt";
+static constexpr bool self_play_show = false;
+static constexpr bool eval_show = false;
 
 bool file_exists(const char * file);
 
