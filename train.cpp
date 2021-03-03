@@ -217,3 +217,50 @@ std::vector<double> Train::train_step(const at::Tensor &state, const at::Tensor 
     at::Tensor R2_new = 1 - torch::var(z - res1[1], 0, true, false) / z_var;
     return { loss1.item().toDouble(),loss2.item().toDouble(),kl.item().toDouble(),R2_old.item().toDouble(),R2_new.item().toDouble() };
 }
+
+double Train::eval_best_with_random(uint32_t num=50)
+{
+    PolicyValueNet network_local(nullptr, true, this->state_c,
+                                 this->nogo.get_n(), this->nogo.get_action_dim());
+    MCTS mcts_train(&network_local, this->n_thread, this->c_puct, this->temp, this->n_simulate,
+                    this->virtual_loss, this->nogo.get_action_dim(), true);
+    this->mcts.set_temp(1e-3);
+    mcts_train.set_temp(1e-3);
+
+    int winner;
+    bool swap = false;
+    uint32_t i, count1 = 0, count2 = 0;
+    for (i = 0; i < num; i++)
+    {
+        // 原作者这里的代码有问题吧，player1不一定play的是black，swap时就play的是white啊
+        this->mcts.reset();
+        mcts_train.reset();
+        this->nogo.reset();
+        winner = this->nogo.start_play(&this->mcts, &mcts_train, swap, eval_show);
+        if (winner == P_BLACK) {
+            if (swap) {
+                count2++;
+            } else {
+                count1++;
+            }
+        }
+        else if (winner == P_WHITE) {
+            if (swap) {
+                count1++;
+            } else {
+                count2++;
+            }
+        }
+        swap = !swap;
+        std::cout << "p1 vs p2: " << count1 << ", " << count2 << std::endl;
+    }
+    double ratio = (count1 + (double)(num - count1 - count2) / 2) / num;
+    if (ratio > 0.55) {
+        std::cout << "best beats random, eval success and train works, your nn has gained intelligence!" << std::endl;
+    }
+    else {
+        std::cout << "eval faild, your trained nn can't even beat random. there must be some bugs!" << std::endl;
+    }
+    return ratio;
+}
+
