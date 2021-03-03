@@ -114,7 +114,7 @@ double Train::evaluate(const char *best_path_local, uint32_t num=50)
     }
     double ratio = (count1 + (double)(num - count1 - count2) / 2) / num;
     if (ratio > 0.55) {
-        std::cout << "eval passed!" << std::endl;
+        std::cout << "eval passed! save current net to best model!" << std::endl;
         this->network.save_model(best_path_local);
     }
     else {
