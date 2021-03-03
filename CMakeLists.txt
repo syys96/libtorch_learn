@@ -41,7 +41,7 @@ set(CMAKE_PREFIX_PATH ../libtorch)
 find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
-add_definitions(-DUSE_CUDA=0)
+add_definitions(-DUSE_CUDA=1)
 
 add_executable(example-app main.cpp board.cpp core/global.cpp
         thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp

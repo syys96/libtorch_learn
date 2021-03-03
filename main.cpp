@@ -9,6 +9,9 @@ int main() {
 //    std::cout << torch::cuda::is_available() << std::endl;
 
 //    test_thread_pool();
+    if (COMPILE_MAX_BOARD_LEN != 9) {
+        return 0;
+    }
     Board main_board(9, 9);
     Player me = parase_jsonString(main_board);
     main_board.print_board(me);
