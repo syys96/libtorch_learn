@@ -170,11 +170,13 @@ void Train::run(const char *model_path_local, const char *best_path_local)
                                 j, this->epochs, res[0], res[1], kl, res[3], res[4], this->c_lr, timer.end_s());
                     k += this->batch_size;
                 }
-                std::cout << "epoch " << j << ", eval begin" << std::endl;
-                timer.start();
-                ratio = this->evaluate(best_path_local);
-                if (ratio > best_ratio) best_ratio = ratio;
-                std::printf("evaluate : ratio=%.8f  best_ratio=%.8f  duration=%.3fs\n", ratio, best_ratio, timer.end_s());
+                if ((j+1) % 4 == 0) {
+                    std::cout << "epoch " << j << ", eval begin" << std::endl;
+                    timer.start();
+                    ratio = this->evaluate(best_path_local);
+                    if (ratio > best_ratio) best_ratio = ratio;
+                    std::printf("evaluate : ratio=%.8f  best_ratio=%.8f  duration=%.3fs\n", ratio, best_ratio, timer.end_s());
+                }
             }
             this->network.save_model(model_path_local);
         }
