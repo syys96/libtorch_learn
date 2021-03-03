@@ -94,7 +94,7 @@ double Train::evaluate(const char *best_path_local, uint32_t num=50)
         this->mcts.reset();
         mcts_train.reset();
         this->nogo.reset();
-        winner = this->nogo.start_play(&this->mcts, &mcts_train, swap, false);
+        winner = this->nogo.start_play(&this->mcts, &mcts_train, swap, true);
         if (winner == P_BLACK) {
             if (swap) {
                 count2++;
@@ -144,56 +144,38 @@ void Train::run(const char *model_path_local, const char *best_path_local)
         std::printf("game %4d/%d : duration=%.3fs  episode=%lu  buffer=%d\n", i, this->n_game, timer.end_s(), states_local.size(), size);
         states_local.clear(); probs_local.clear(); values_local.clear(); values_.clear();
         if (size < this->batch_size) continue;
-        //for (k = 0; k < size; k++)
-        //{
-        //	states.push_back(this->states[k]);
-        //	probs.push_back(this->probs[k]);
-        //	values_.push_back(this->values[k]);
-        //}
-        for (j = 0; j < this->epochs; j++)
-        {
-            at::Tensor index = torch::randperm(size, torch::Dtype::Long);
-            at::Tensor index1;
-            k = 0;
-            while (k < size)
-            {
-                timer.start();
-                index1 = index.slice(0, k, k + this->batch_size);
-                if (k + this->batch_size > size)
-                {
-                    // 补齐batch
-                    index1 = torch::cat({ index1,index.slice(0, 0, k + this->batch_size - size) }, 0);
-                }
-                res = this->train_step(this->states.index(index1), this->probs.index(index1).reshape({index1.size(0),this->nogo.get_action_dim()}),
-                                       this->values.index(index1), this->lr * this->c_lr);
-                kl = res[2];
-                std::printf("train %3d/%d : cross_entropy_loss=%.8f  mse_loss=%.8f  kl=%.8f  R2_old=%.8f  R2_new=%.8f  c_lr=%.5f  duration=%.3fs\n",
-                            j, this->epochs, res[0], res[1], kl, res[3], res[4], this->c_lr, timer.end_s());
-                k += this->batch_size;
-            }
-            //at::Tensor index = torch::randint(size, this->batch_size);
-            //states.clear(); probs.clear(); values.clear(); values_.clear();
-            //for (k = 0; k < this->batch_size; k++)
-            //{
-            //	idx = index[k].item().toInt();
-            //	states.push_back(this->states[idx]);
-            //	probs.push_back(this->probs[idx]);
-            //	values_.push_back(this->values[idx]);
-            //}
-            //res = this->train_step(states, probs, values_, this->lr * this->c_lr);
-            //kl = res[2];
-            //if (kl > this->kl_targ * 2 && this->c_lr > 0.1) this->c_lr /= 1.5;
-            //else if (kl < this->kl_targ / 2 && this->c_lr < 10) this->c_lr *= 1.5;
-            //std::printf("train %3d/%d : cross_entropy_loss=%.8f  mse_loss=%.8f  kl=%.8f  R2_old=%.8f  R2_new=%.8f  c_lr=%.5f  duration=%.3fs\n",
-            //		j, this->epochs, res[0], res[1], kl, res[3], res[4], this->c_lr, timer.end_s());
-        }
-        this->network.save_model(model_path_local);
         if ((i + 1) % this->check_freq == 0)
         {
-            timer.start();
-            ratio = this->evaluate(best_path_local);
-            if (ratio > best_ratio) best_ratio = ratio;
-            std::printf("evaluate : ratio=%.8f  best_ratio=%.8f  duration=%.3fs\n", ratio, best_ratio, timer.end_s());
+            std::cout << "data collected, start train and eval" << std::endl;
+            for (j = 0; j < this->epochs; j++)
+            {
+                std::cout << "epoch " << j << ", train begin" << std::endl;
+                at::Tensor index = torch::randperm(size, torch::Dtype::Long);
+                at::Tensor index1;
+                k = 0;
+                while (k < size)
+                {
+                    timer.start();
+                    index1 = index.slice(0, k, k + this->batch_size);
+                    if (k + this->batch_size > size)
+                    {
+                        // 补齐batch
+                        index1 = torch::cat({ index1,index.slice(0, 0, k + this->batch_size - size) }, 0);
+                    }
+                    res = this->train_step(this->states.index(index1), this->probs.index(index1).reshape({index1.size(0),this->nogo.get_action_dim()}),
+                                           this->values.index(index1), this->lr * this->c_lr);
+                    kl = res[2];
+                    std::printf("train %3d/%d : cross_entropy_loss=%.8f  mse_loss=%.8f  kl=%.8f  R2_old=%.8f  R2_new=%.8f  c_lr=%.5f  duration=%.3fs\n",
+                                j, this->epochs, res[0], res[1], kl, res[3], res[4], this->c_lr, timer.end_s());
+                    k += this->batch_size;
+                }
+                std::cout << "epoch " << j << ", eval begin" << std::endl;
+                timer.start();
+                ratio = this->evaluate(best_path_local);
+                if (ratio > best_ratio) best_ratio = ratio;
+                std::printf("evaluate : ratio=%.8f  best_ratio=%.8f  duration=%.3fs\n", ratio, best_ratio, timer.end_s());
+            }
+            this->network.save_model(model_path_local);
         }
     }
 }
