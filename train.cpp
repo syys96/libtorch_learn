@@ -118,8 +118,9 @@ double Train::evaluate(const char *best_path_local, uint32_t num=50)
         this->network.save_model(best_path_local);
     }
     else {
-        std::cout << "eval faild, net back to best checkpoint" << std::endl;
-        this->network.load_model(best_path_local);
+        std::cout << "eval faild, keep this net not reloaded " <<
+                     "and continue train this net until eval pass" << std::endl;
+//        this->network.load_model(best_path_local);
     }
     return ratio;
 }
