@@ -25,7 +25,7 @@ TEST(test_torch_tensor, test_torch_tensor_test_reshape)
 
     std::cout << tensorm[xNN][yNN] << std::endl;
     std::cout << tensorm[yNN][xNN] << std::endl;
-//    ASSERT_EQ(tensorm[xNN][yNN].item(), 1);
-//    ASSERT_EQ(tensorm[yNN][xNN].item(), -1);
+    ASSERT_EQ(tensorm[xNN][yNN].item().toInt(), 1);
+    ASSERT_EQ(tensorm[yNN][xNN].item().toInt(), -1);
 
 }
