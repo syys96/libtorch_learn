@@ -9,8 +9,8 @@
 #include <ctime>
 #include "../mcts.h"
 
-static const char *model_path = "../model/model-checkpoint.pt";
-static const char *best_path = "../model/model-best.pt";
+static const char *model_path = "../model/size_9/model-checkpoint.pt";
+static const char *best_path = "../model/size_9/model-best.pt";
 static constexpr bool self_play_show = false;
 static constexpr bool eval_show = false;
 static constexpr uint32_t train_epoch = 10;
