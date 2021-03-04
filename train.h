@@ -48,7 +48,7 @@ public:
     void push(const at::Tensor &s, const at::Tensor &p, const at::Tensor &z);
     // 评估
     double evaluate(const char *best_path_local, uint32_t num);
-    double eval_best_with_random(uint32_t num);
+    double eval_best_with(uint32_t num, const char *other_nn_path= nullptr);
     void run(const char *model_path_local, const char *best_path_local);
     std::vector<double> train_step(const std::vector<at::Tensor> &state, const std::vector<at::Tensor> &prob, const std::vector<at::Tensor> &value, const double &lr);
     std::vector<double> train_step(const at::Tensor &state, const at::Tensor &prob, const at::Tensor &value, const double &lr);

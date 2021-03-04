@@ -7,6 +7,6 @@
 int main()
 {
     Train train;
-    train.eval_best_with_random(100);
+    train.eval_best_with(100);
     return 0;
 }

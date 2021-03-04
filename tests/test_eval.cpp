@@ -11,6 +11,7 @@
 int main()
 {
     Train train;
-    train.evaluate(best_path, 50);
+    train.eval_best_with(50, best_path);
+
     return 0;
 }

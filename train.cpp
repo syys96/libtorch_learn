@@ -218,9 +218,9 @@ std::vector<double> Train::train_step(const at::Tensor &state, const at::Tensor 
     return { loss1.item().toDouble(),loss2.item().toDouble(),kl.item().toDouble(),R2_old.item().toDouble(),R2_new.item().toDouble() };
 }
 
-double Train::eval_best_with_random(uint32_t num=50)
+double Train::eval_best_with(uint32_t num=50, const char *other_nn_path)
 {
-    PolicyValueNet network_local(nullptr, true, this->state_c,
+    PolicyValueNet network_local(other_nn_path, true, this->state_c,
                                  this->nogo.get_n(), this->nogo.get_action_dim());
     MCTS mcts_train(&network_local, this->n_thread, this->c_puct, this->temp, this->n_simulate,
                     this->virtual_loss, this->nogo.get_action_dim(), true);
