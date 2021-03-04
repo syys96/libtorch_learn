@@ -138,11 +138,11 @@ void Train::run(const char *model_path_local, const char *best_path_local)
         std::vector<at::Tensor> states_local, probs_local, values_;
         std::vector<float> values_local;
         mcts.self_play(&this->nogo, states_local, probs_local, values_local, this->temp,
-                COMPILE_MAX_BOARD_LEN*COMPILE_MAX_BOARD_LEN/8,
+                explore_count,
                 true, self_play_show);
         this->augment_data(states_local, probs_local, values_local);
         size = this->states.size(0);
-        std::printf("game %4d/%d : duration=%.3fs  episode=%lu  buffer=%d\n", i, this->n_game, timer.end_s(), states_local.size(), size);
+        std::printf("game %4d/%d : duration=%.3fs  episode=%lu  buffer=%d\n", i+1, this->n_game, timer.end_s(), states_local.size(), size);
         states_local.clear(); probs_local.clear(); values_local.clear(); values_.clear();
         if (size < this->batch_size) continue;
         if ((i + 1) % this->check_freq == 0)
@@ -170,8 +170,8 @@ void Train::run(const char *model_path_local, const char *best_path_local)
                                 j, this->epochs, res[0], res[1], kl, res[3], res[4], this->c_lr, timer.end_s());
                     k += this->batch_size;
                 }
-                if ((j+1) % 4 == 0) {
-                    std::cout << "epoch " << j << ", eval begin" << std::endl;
+                if ((j+1) % eval_fre == 0) {
+                    std::cout << "epoch " << j+1 << ", eval begin" << std::endl;
                     timer.start();
                     ratio = this->evaluate(best_path_local);
                     if (ratio > best_ratio) best_ratio = ratio;

@@ -478,7 +478,7 @@ int MCTS::self_play(Nogo *nogo, std::vector<at::Tensor> &states, std::vector<at:
             players.emplace_back(idx);
             res = nogo->get_game_status();
             if (show) nogo->display();
-            if ((this->n_count >> 1) >= n_round) this->temp = 1e-3;
+            if (this->n_count >= n_round) this->temp = 1e-3;
         }
     }
 
