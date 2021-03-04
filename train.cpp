@@ -150,7 +150,7 @@ void Train::run(const char *model_path_local, const char *best_path_local)
             std::cout << "data collected, start train and eval" << std::endl;
             for (j = 0; j < this->epochs; j++)
             {
-                std::cout << "epoch " << j << ", train begin" << std::endl;
+                std::cout << "epoch " << j+1 << ", train begin" << std::endl;
                 at::Tensor index = torch::randperm(size, torch::Dtype::Long);
                 at::Tensor index1;
                 k = 0;
@@ -167,7 +167,7 @@ void Train::run(const char *model_path_local, const char *best_path_local)
                                            this->values.index(index1), this->lr * this->c_lr);
                     kl = res[2];
                     std::printf("train %3d/%d : cross_entropy_loss=%.8f  mse_loss=%.8f  kl=%.8f  R2_old=%.8f  R2_new=%.8f  c_lr=%.5f  duration=%.3fs\n",
-                                j, this->epochs, res[0], res[1], kl, res[3], res[4], this->c_lr, timer.end_s());
+                                j+1, this->epochs, res[0], res[1], kl, res[3], res[4], this->c_lr, timer.end_s());
                     k += this->batch_size;
                 }
                 if ((j+1) % eval_fre == 0) {
