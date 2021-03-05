@@ -288,7 +288,7 @@
 //    return { loss1.item().toDouble(),loss2.item().toDouble(),kl.item().toDouble(),R2_old.item().toDouble(),R2_new.item().toDouble() };
 //}
 
-#include "../train.h"
+#include "train.h"
 
 int main()
 {
