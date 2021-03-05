@@ -32,9 +32,9 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
     include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-include_directories(external)
-include_directories(external/tclap-1.2.2/include)
-include_directories(SYSTEM external/filesystem-1.3.6/include) #SYSTEM suppresses a few warnings
+#include_directories(external)
+#include_directories(external/tclap-1.2.2/include)
+#include_directories(SYSTEM external/filesystem-1.3.6/include) #SYSTEM suppresses a few warnings
 
 set(CMAKE_PREFIX_PATH ../libtorch)
 
@@ -43,36 +43,36 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 add_definitions(-DUSE_CUDA=1)
 
-add_executable(example-app main.cpp board.cpp core/global.cpp
+add_executable(example-app main.cpp board.cpp
         thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
         policy_value_net.cpp mcts.cpp)
 target_link_libraries(example-app "${TORCH_LIBRARIES}")
 set_property(TARGET example-app PROPERTY CXX_STANDARD 14)
 
-add_executable(self_play_test tests/self_play_test.cpp board.cpp core/global.cpp
+add_executable(self_play_test tests/self_play_test.cpp board.cpp
         thread_pool.cpp nogo.cpp libtorch.cpp policy_value_net.cpp mcts.cpp)
 target_link_libraries(self_play_test "${TORCH_LIBRARIES}")
 set_property(TARGET self_play_test PROPERTY CXX_STANDARD 14)
 
-add_executable(copy_board_test tests/copy_board_test.cpp board.cpp core/global.cpp
+add_executable(copy_board_test tests/copy_board_test.cpp board.cpp
         thread_pool.cpp nogo.cpp)
 target_link_libraries(copy_board_test "${TORCH_LIBRARIES}" gtest_main)
 set_property(TARGET copy_board_test PROPERTY CXX_STANDARD 14)
 enable_testing()
 
-add_executable(runtool runtool.cpp train.cpp board.cpp core/global.cpp
+add_executable(runtool runtool.cpp train.cpp board.cpp
         thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
         policy_value_net.cpp mcts.cpp)
 target_link_libraries(runtool "${TORCH_LIBRARIES}")
 set_property(TARGET runtool PROPERTY CXX_STANDARD 14)
 
-add_executable(test_eval tests/test_eval.cpp train.cpp board.cpp core/global.cpp
+add_executable(test_eval tests/test_eval.cpp train.cpp board.cpp
         thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
         policy_value_net.cpp mcts.cpp)
 target_link_libraries(test_eval "${TORCH_LIBRARIES}")
 set_property(TARGET test_eval PROPERTY CXX_STANDARD 14)
 
-add_executable(test_best_with_random tests/test_best_with_random.cpp train.cpp board.cpp core/global.cpp
+add_executable(test_best_with_random tests/test_best_with_random.cpp train.cpp board.cpp
         thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
         policy_value_net.cpp mcts.cpp)
 target_link_libraries(test_best_with_random "${TORCH_LIBRARIES}")
