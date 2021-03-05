@@ -5,3 +5,4 @@ cmake-build-minsizerel/
 cmake-build-release/
 cmake-build-relwithdebinfo/
 model/
+tests/thread_pool_test_merge_v1_files/
