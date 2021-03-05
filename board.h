@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 #ifndef COMPILE_MAX_BOARD_LEN
 #define COMPILE_MAX_BOARD_LEN static_cast<Size>(9)
