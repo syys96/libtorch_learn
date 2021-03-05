@@ -7,7 +7,7 @@
 
 #include <deque>
 #include <ctime>
-#include "../mcts.h"
+#include "mcts.h"
 
 static const char *model_path = "../model/size_9/model-checkpoint.pt";
 static const char *best_path = "../model/size_9/model-best.pt";
