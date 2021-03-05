@@ -89,7 +89,7 @@ void Board::init(Size xS, Size yS)
 {
     if(xS < 0 || yS < 0 || xS > MAX_LEN || yS > MAX_LEN) {
         std::cout << xS << ", " << MAX_LEN << std::endl;
-        throw StringError("Board::init - invalid board size");
+        throw std::runtime_error("Board::init - invalid board size");
     }
 
 
@@ -185,14 +185,14 @@ void Board::playMoveAssumeLegal(Loc loc, Player pla)
             //Kill it?
             if(getNumLiberties(adj) == 0)
             {
-                throw StringError("capture opp stone is illegal in nogo!");
+                throw std::runtime_error("capture opp stone is illegal in nogo!");
             }
         }
     }
 
     //Handle suicide
     if(getNumLiberties(loc) == 0) {
-        throw StringError("suicide is illegal in nogo!");
+        throw std::runtime_error("suicide is illegal in nogo!");
     }
 
     // update blanks
