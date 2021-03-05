@@ -7,7 +7,6 @@
 
 #include <tuple>
 #include <vector>
-#include "core/global.h"
 #include "board.h"
 #include <torch/torch.h>
 #include <torch/script.h>

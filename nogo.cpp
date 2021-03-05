@@ -19,7 +19,7 @@ bool Nogo::execute_move(Nogo::move_type move) {
         board.print_board(cur_color);
         board.print_legal_dist(cur_color);
         board.print_legal_dist(getOpp(cur_color));
-        throw StringError("illegal move when execute move!");
+        throw std::runtime_error("illegal move when execute move!");
         return false;
     }
     this->cur_color = getOpp(this->cur_color);

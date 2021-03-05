@@ -12,7 +12,6 @@
 #include <condition_variable>
 #include <future>
 #include <functional>
-#include "core/global.h"
 
 //class ThreadPool
 //{
