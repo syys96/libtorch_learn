@@ -15,7 +15,7 @@ void compare(uint32_t batch)
     std::vector<at::Tensor> pred = network.model->forward(x);
     clock_t e = clock();
     clock_t s1 = clock();
-    if (USE_CUDA && torch::cuda::is_available() && torch::cuda::cudnn_is_available()) {
+    if (torch::cuda::is_available() && torch::cuda::cudnn_is_available()) {
         std::cout << "use cuda" << std::endl;
         x = x.to(torch::kCUDA);
         network.model->to(torch::kCUDA);
