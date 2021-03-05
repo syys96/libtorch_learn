@@ -179,6 +179,8 @@ void Train::run(const char *model_path_local, const char *best_path_local)
                 }
             }
             this->network.save_model(model_path_local);
+            // after eval finish, we nned to start selfplay with curr best model
+            this->network.load_model(best_path_local);
         }
     }
 }
