@@ -1,22 +1,22 @@
 // system include headers
-#include <numeric>
-#include <future>
+#include <memory>
+#include <ctime>
+#include <cassert>
+#include <condition_variable>
 #include <cmath>
 #include <cfloat>
-#include <atomic>
-#include <memory>
-#include <vector>
-#include <tuple>
-#include <torch/script.h>
-#include <torch/torch.h>
-#include <thread>
-#include <condition_variable>
-#include <iostream>
-#include <functional>
-#include <queue>
-#include <cassert>
+#include <numeric>
 #include <cstdlib>
-#include <ctime>
+#include <torch/torch.h>
+#include <vector>
+#include <atomic>
+#include <functional>
+#include <iostream>
+#include <tuple>
+#include <thread>
+#include <torch/script.h>
+#include <future>
+#include <queue>
 
 
 // header files
@@ -1945,7 +1945,7 @@ int main()
     uint32_t n_thread = 1;
     uint32_t c_puct=5;
     double temp=1e-3;
-    uint32_t n_simulate=60;
+    uint32_t n_simulate=400;
     double virtual_loss=3;
     PolicyValueNet network_local(other_nn_path, true, state_c,
                                  nogo.get_n(), nogo.get_action_dim());
