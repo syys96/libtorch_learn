@@ -105,6 +105,7 @@ public:
         this->model(torch::zeros({ 1,state_c,state_h,state_h }, this->device));
     }
     ~PolicyValueNet() {};
+    void save_model_cpu(const char * save_path);
     inline void save_model(const char * save_path) { torch::save(this->model, save_path); }
     inline void load_model(const char * model_path) { torch::load(this->model, model_path); }
     inline std::vector<at::Tensor> predict(const std::vector<at::Tensor> &x) { return this->model(torch::cat(x, 0).to(this->device)); }

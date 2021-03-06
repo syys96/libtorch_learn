@@ -70,6 +70,10 @@ add_executable(submit submit.cpp board.cpp
 target_link_libraries(submit "${TORCH_LIBRARIES}")
 set_property(TARGET submit PROPERTY CXX_STANDARD 14)
 
+add_executable(gpu2cpu gpu2cpu.cpp policy_value_net.cpp)
+target_link_libraries(gpu2cpu "${TORCH_LIBRARIES}")
+set_property(TARGET gpu2cpu PROPERTY CXX_STANDARD 14)
+
 add_executable(test_eval tests/test_eval.cpp train.cpp board.cpp
         thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
         policy_value_net.cpp mcts.cpp)

@@ -11,6 +11,7 @@
 
 static const char *model_path = "../model/size_9/model-checkpoint.pt";
 static const char *best_path = "../model/size_9/model-best.pt";
+static const char *best_path_cpu = "../model/size_9/model-best-cpu.pt";
 static constexpr bool self_play_show = false;
 static constexpr bool eval_show = false;
 static constexpr uint32_t train_epoch = 10;
