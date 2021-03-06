@@ -15,7 +15,7 @@ int main()
     uint32_t n_thread = 1;
     uint32_t c_puct=5;
     double temp=1e-3;
-    uint32_t n_simulate=400;
+    uint32_t n_simulate=200;
     double virtual_loss=3;
     PolicyValueNet network_local(other_nn_path, true, state_c,
                                  nogo.get_n(), nogo.get_action_dim());
