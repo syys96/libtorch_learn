@@ -38,6 +38,7 @@ public:
     inline Size get_n() const { return this->n; }
     inline Size get_action_dim() const { return this->n*this->n; }
     void reset();
+    void parse_botzone_input();
 
 private:
     board_type board;      // game borad

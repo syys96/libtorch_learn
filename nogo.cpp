@@ -140,6 +140,25 @@ int Nogo::start_play(Playerm *player1, Playerm *player2, bool swap, bool show)
     return res[1];
 }
 
+void Nogo::parse_botzone_input() {
+    reset();
+    int inx, iny;
+    int turnID;
+    std::cin >> turnID;
+    for (int i = 0; i < turnID; i++) {
+        std::cin >> inx >> iny;
+        if (inx != -1) {
+            execute_move(Location::getLoc(inx, iny, n));
+        }
+        if (i < turnID - 1) {
+            std::cin >> inx >> iny;
+            if (inx >= 0) {
+                execute_move(Location::getLoc(inx, iny, n));
+            }
+        }
+    }
+}
+
 //Nogo& Nogo::operator=(const Nogo &) {
 //    Nogo copy(n, cur_color);
 //    copy.board = board;

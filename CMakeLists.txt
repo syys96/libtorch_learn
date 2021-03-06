@@ -64,6 +64,12 @@ add_executable(runtool runtool.cpp train.cpp board.cpp
 target_link_libraries(runtool "${TORCH_LIBRARIES}")
 set_property(TARGET runtool PROPERTY CXX_STANDARD 14)
 
+add_executable(submit submit.cpp board.cpp
+        thread_pool.cpp nogo.cpp libtorch.cpp
+        policy_value_net.cpp mcts.cpp)
+target_link_libraries(submit "${TORCH_LIBRARIES}")
+set_property(TARGET submit PROPERTY CXX_STANDARD 14)
+
 add_executable(test_eval tests/test_eval.cpp train.cpp board.cpp
         thread_pool.cpp nogo.cpp botzone/parase_input.cpp libtorch.cpp
         policy_value_net.cpp mcts.cpp)
