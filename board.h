@@ -13,6 +13,10 @@
 #define COMPILE_MAX_BOARD_LEN static_cast<Size>(9)
 #endif
 
+#ifdef _BOTZONE_ONLINE
+#define SINGLE_THREAD
+#endif
+
 struct Board;
 
 typedef int8_t Color;
@@ -28,6 +32,15 @@ typedef int16_t Num;
 #define ADJ3 static_cast<Loc>(x_size+1)
 #define FOREACHONBOARD(BLOCK) {for(Loc y = 0; y < y_size; y++) { for(Loc x = 0; x < x_size; x++) {Loc loc=Location::getLoc(x, y, x_size); {BLOCK}}}}
 
+class TimeCounter
+{
+public:
+    inline void start() { this->s = clock(); }
+    inline clock_t end() { this->e = clock(); return this->e - this->s; }
+    inline double end_s() { return (double)this->end() / CLOCKS_PER_SEC; }
+private:
+    clock_t s, e;
+};
 
 //Location of a point on the board
 //(x,y) is represented as (x+1) + (y+1)*(x_size+1)

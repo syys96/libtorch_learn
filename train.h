@@ -22,16 +22,6 @@ static constexpr uint32_t buffer_num = 20000;
 
 bool file_exists(const char * file);
 
-class TimeCounter
-{
-public:
-    inline void start() { this->s = clock(); }
-    inline clock_t end() { this->e = clock(); return this->e - this->s; }
-    inline double end_s() { return (double)this->end() / CLOCKS_PER_SEC; }
-private:
-    clock_t s, e;
-};
-
 class Train
 {
 public:

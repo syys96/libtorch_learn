@@ -315,7 +315,19 @@ std::vector<double> MCTS::get_action_prob(Nogo *nogo)
     // 等待模拟结束
     for (i = 0; i < this->n_simulate; i++) futures[i].wait();
 #else
-    for (i = 0; i < this->n_simulate; i++) this->simulate(gomoku);
+#ifdef _BOTZONE_ONLINE
+    TimeCounter tcm;
+    tcm.start();
+#endif
+    for (i = 0; i < this->n_simulate; i++) {
+        #ifdef _BOTZONE_ONLINE
+        double timedur = tcm.end_s();
+        if (timedur > 0.80) {
+            break;
+        }
+        #endif
+        this->simulate(nogo);
+    }
 #endif // !SINGLE_THREAD
 
     std::vector<double> action_prob(this->action_dim, 0);
