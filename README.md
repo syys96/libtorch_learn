@@ -35,3 +35,9 @@ make
 
 ​	runtool will detect the model file automatically and start loop of selfplay, training and evaluation.
 
+
+##### TODO
+
+- 把submit改成长时运行
+- 去除不必要的验证代码，加速
+- 网络加大一点，block和filter都搞起来，现在网络才1m，能不弱吗
