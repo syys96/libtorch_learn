@@ -2,8 +2,8 @@
 // Created by syys on 2021/3/1.
 //
 
-#include "torch/script.h"
-#include "torch/torch.h"
+#include <torch/script.h>
+#include <torch/torch.h>
 #include "../nogo.h"
 #include "gtest/gtest.h"
 
