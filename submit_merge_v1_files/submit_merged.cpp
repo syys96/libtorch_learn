@@ -1,22 +1,22 @@
 // system include headers
-#include <queue>
-#include <vector>
 #include <cmath>
 #include <cstdlib>
+#include <functional>
+#include <cfloat>
+#include <torch/script.h>
+#include <cassert>
+#include <vector>
+#include <memory>
+#include <ctime>
 #include <thread>
 #include <numeric>
 #include <future>
-#include <memory>
-#include <ctime>
-#include <torch/torch.h>
 #include <condition_variable>
-#include <cfloat>
 #include <atomic>
 #include <iostream>
 #include <tuple>
-#include <cassert>
-#include <functional>
-#include <torch/script.h>
+#include <torch/torch.h>
+#include <queue>
 
 
 // header files
@@ -1753,7 +1753,7 @@ std::vector<double> MCTS::get_action_prob(Nogo *nogo)
     for (i = 0; i < this->n_simulate; i++) {
         #ifdef _BOTZONE_ONLINE
         double timedur = tcm.end_s();
-        if (timedur > 0.90) {
+        if (timedur > 0.80) {
             break;
         }
         #endif
